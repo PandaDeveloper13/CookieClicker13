@@ -1,0 +1,39 @@
+     body { 
+        font-family: Arial, sans-serif; 
+        text-align: center; 
+        margin-top: 50px; 
+    }
+       
+    
+    #count { 
+            font-size: 2em; 
+            margin-bottom: 20px; 
+        }
+       
+       
+     #cookieBtn { 
+            font-size: 1.5em; 
+            padding: 10px 30px; 
+        }
+
+
+    .cookie_img {
+        cursor: pointer;
+    }
+
+    #cookieBtn {
+    font-size: 1.5em;
+    padding: 10px 30px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+#cookieBtn.clicked {
+    animation: pop 0.2s;
+}
+
+@keyframes pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
