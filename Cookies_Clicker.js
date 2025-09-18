@@ -2,33 +2,39 @@ let count = 0;
 const countDiv = document.getElementById('count');
 const btn = document.getElementById('cookieBtn');
 const shopBtn = document.getElementById('shopBtn');
-const multiplierBtn = document.getElementById('multiplierBtn'); // nieuwe knop
+const multiplierBtn = document.getElementById('multiplierBtn');
 const AutoRate = 1000; // elke seconde
-let autoClickerActive = false;
-let multiplier = 1; // standaard 1
-let multiplierCost = 100; // eerste prijs voor multiplier
+let multiplier = 1;
+let multiplierCost = 10;
+let autoClickerCost = 5;
 
 // Cookie button
 btn.addEventListener('click', function() {
-    count += multiplier; // multiplier telt ook mee
-    countDiv.textContent = count;
+    count += multiplier;
+    updateCount();
     btn.classList.add('clicked');
     setTimeout(() => btn.classList.remove('clicked'), 200);
 });
 
-// Shop button -> AutoClicker
+// Shop button -> koop AutoClicker (meerdere keren mogelijk)
 shopBtn.addEventListener('click', function() {
-    if (count >= 25 && !autoClickerActive) {
-        count -= 25;
-        countDiv.textContent = count;
-        autoClickerActive = true;
+    if (count >= autoClickerCost) {
+        count -= autoClickerCost;
+        updateCount();
 
+        // Start een nieuwe interval voor deze autoclicker
         setInterval(() => {
-            count += multiplier; // autoclicker telt ook met multiplier
-            countDiv.textContent = count;
+            count += multiplier;
+            updateCount();
         }, AutoRate);
-    } else if (count < 25) {
-        alert("Je hebt minimaal 50 cookies nodig!");
+
+        // Prijs verdubbelt
+        autoClickerCost *= 2;
+        shopBtn.textContent = `🛒 Koop AutoClicker (${autoClickerCost})`;
+
+        alert("Nieuwe AutoClicker gekocht!");
+    } else {
+        alert("Je hebt minimaal " + autoClickerCost + " cookies nodig!");
     }
 });
 
@@ -36,14 +42,18 @@ shopBtn.addEventListener('click', function() {
 multiplierBtn.addEventListener('click', function() {
     if (count >= multiplierCost) {
         count -= multiplierCost;
-        multiplier *= 2; // verdubbelt multiplier
-        multiplierCost *= 3; // prijs verdubbelt telkens
-        countDiv.textContent = count;
+        multiplier *= 2;
+        multiplierCost *= 2;
+        updateCount();
+
+        multiplierBtn.textContent = `✨ Koop Multiplier (${multiplierCost})`;
         alert("Multiplier gekocht! Je cookies tellen nu x" + multiplier);
     } else {
         alert("Je hebt minimaal " + multiplierCost + " cookies nodig!");
     }
 });
 
-
-
+// Handige functie
+function updateCount() {
+    countDiv.textContent = count;
+}
