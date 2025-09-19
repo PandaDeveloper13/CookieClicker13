@@ -1,12 +1,15 @@
 let count = 0;
 const countDiv = document.getElementById('count');
 const btn = document.getElementById('cookieBtn');
-const shopBtn = document.getElementById('shopBtn');
+const Clicker = document.getElementById('Clicker');
+const Oma = document.getElementById('Oma');
 const multiplierBtn = document.getElementById('multiplierBtn');
-const AutoRate = 1000; // elke seconde
+const AutoRate = 10000; // 10 seconden
+const OmaRate = 1000; // 1 seconde
 let multiplier = 1;
-let multiplierCost = 10;
-let autoClickerCost = 5;
+let multiplierCost = 100;
+let autoClickerCost = 20;
+let OmaCost = 20;
 
 // Cookie button
 btn.addEventListener('click', function() {
@@ -17,7 +20,7 @@ btn.addEventListener('click', function() {
 });
 
 // Shop button -> koop AutoClicker (meerdere keren mogelijk)
-shopBtn.addEventListener('click', function() {
+Clicker.addEventListener('click', function() {
     if (count >= autoClickerCost) {
         count -= autoClickerCost;
         updateCount();
@@ -29,12 +32,33 @@ shopBtn.addEventListener('click', function() {
         }, AutoRate);
 
         // Prijs verdubbelt
-        autoClickerCost *= 2;
-        shopBtn.textContent = `🛒 Koop AutoClicker (${autoClickerCost})`;
+        autoClickerCost *= 5;
+        Clicker.textContent = `🛒 Koop Clicker (${autoClickerCost})`;
 
-        alert("Nieuwe AutoClicker gekocht!");
+        alert("Nieuwe Clicker gekocht!");
     } else {
         alert("Je hebt minimaal " + autoClickerCost + " cookies nodig!");
+    }
+});
+Oma.addEventListener('click', function() {
+    if (count >= OmaCost) {
+        count -= OmaCost;
+        updateCount();
+
+        // Start een nieuwe interval voor deze Oma
+        setInterval(() => {
+            count += 2 * multiplier;
+
+            updateCount();
+        }, OmaRate);
+
+        // Prijs stijging
+        OmaCost *= 5;
+        Oma.textContent = `👵🏻 Oma (${OmaCost})`;
+
+        alert("Oma aangenomen :D");
+    } else {
+        alert("Je hebt minimaal " + OmaCost + " cookies nodig!");
     }
 });
 
@@ -43,7 +67,7 @@ multiplierBtn.addEventListener('click', function() {
     if (count >= multiplierCost) {
         count -= multiplierCost;
         multiplier *= 2;
-        multiplierCost *= 2;
+        multiplierCost *= 5;
         updateCount();
 
         multiplierBtn.textContent = `✨ Koop Multiplier (${multiplierCost})`;
