@@ -3,17 +3,17 @@ const countDiv = document.getElementById('count');
 const btn = document.getElementById('cookieBtn');
 const Clicker = document.getElementById('Clicker');
 const Oma = document.getElementById('Oma');
-const multiplierBtn = document.getElementById('multiplierBtn');
-const AutoRate = 10000; // 10 seconden
-const OmaRate = 1000; // 1 seconde
-let multiplier = 1;
-let multiplierCost = 100;
+const multiplierMouseBtn = document.getElementById('multiplierMouseBtn');
+const AutoRate = 10000; // 10 seconde
+const OmaRate = 5000; // 5 seconde
+let multiplierMouse = 1;
+let multiplierMouseCost = 100;
 let autoClickerCost = 20;
-let OmaCost = 20;
+let OmaCost = 125;
 
 // Cookie button
 btn.addEventListener('click', function() {
-    count += multiplier;
+    count += multiplierMouse;
     updateCount();
     btn.classList.add('clicked');
     setTimeout(() => btn.classList.remove('clicked'), 200);
@@ -27,7 +27,7 @@ Clicker.addEventListener('click', function() {
 
         // Start een nieuwe interval voor deze autoclicker
         setInterval(() => {
-            count += multiplier;
+            count += 3;
             updateCount();
         }, AutoRate);
 
@@ -47,7 +47,7 @@ Oma.addEventListener('click', function() {
 
         // Start een nieuwe interval voor deze Oma
         setInterval(() => {
-            count += 2 * multiplier;
+            count += 5;
 
             updateCount();
         }, OmaRate);
@@ -62,18 +62,18 @@ Oma.addEventListener('click', function() {
     }
 });
 
-// Multiplier button -> verdubbelt multiplier
-multiplierBtn.addEventListener('click', function() {
-    if (count >= multiplierCost) {
-        count -= multiplierCost;
-        multiplier *= 2;
-        multiplierCost *= 5;
+// Multiplier button -> verdubbelt multiplier (VOOR DE PLAYER Klik ALLEEN)
+multiplierMouseBtn.addEventListener('click', function() {
+    if (count >= multiplierMouseCost) {
+        count -= multiplierMouseCost;
+        multiplierMouse *= 2;
+        multiplierMouseCost *= 5;
         updateCount();
 
-        multiplierBtn.textContent = `✨ Koop Multiplier (${multiplierCost})`;
-        alert("Multiplier gekocht! Je cookies tellen nu x" + multiplier);
+        multiplierMouseBtn.textContent = `✨ Koop Multiplier (${multiplierMouseCost})`;
+        alert("Multiplier gekocht! Je cookies tellen nu x" + multiplierMouse);
     } else {
-        alert("Je hebt minimaal " + multiplierCost + " cookies nodig!");
+        alert("Je hebt minimaal " + multiplierMouseCost + " cookies nodig!");
     }
 });
 
