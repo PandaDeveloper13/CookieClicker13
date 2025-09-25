@@ -1,100 +1,106 @@
 let count = 0;
 const countDiv = document.getElementById('count');
 const btn = document.getElementById('cookieBtn');
-const Clicker = document.getElementById('Clicker');
-const Oma = document.getElementById('Oma');
-const multiplierMouseBtn = document.getElementById('multiplierMouseBtn');
-const SpeedBtn = document.getElementById('SpeedyAuto');
-let autoClickers = [];
-let AutoRate = 10000; // start = 10 sec
-const OmaRate = 1000; // 1 seconde
-let multiplierMouse = 1;
-let multiplierMouseCost = 100;
-let autoClickerCost = 10;
-let OmaCost = 125;
-let speedCost = 0;
+const shopBtn = document.getElementById('shopBtn');
+const multiplierBtn = document.getElementById('multiplierBtn');
+const autoClickerBtn = document.getElementById('autoClickerBtn');
+const cpsDiv = document.getElementById('cps');
+const AutoRate = 1000;  
+let multiplier = 1;
+let multiplierCost = 50;
+let shopCost = 250;
+let autoClickerCost = 1000;
+let autoClickerCount = 0;
+
+// Stats tracking variables
+let totalClicks = 0;
+let cookiesSpent = 0;
+let allTimeCookies = 0;
+
+// Get stats display elements
+const totalCookiesDisplay = document.getElementById('totalCookies');
+const currentCPSDisplay = document.getElementById('currentCPS');
+const totalClicksDisplay = document.getElementById('totalClicks');
+const grandmaCountDisplay = document.getElementById('grandmaCount');
+const cookiesSpentDisplay = document.getElementById('cookiesSpent');
+const allTimeCookiesDisplay = document.getElementById('allTimeCookies');
 
 // Cookie button
 btn.addEventListener('click', function() {
-    count += multiplierMouse;
+    count += multiplier;
+    totalClicks++;
+    allTimeCookies += multiplier;
     updateCount();
+    updateStats();
     btn.classList.add('clicked');
     setTimeout(() => btn.classList.remove('clicked'), 200);
 });
 
-// Shop button -> koop AutoClicker (meerdere keren mogelijk)
-Clicker.addEventListener('click', function() {
+// Multiplier button -> doubles multiplier
+multiplierBtn.addEventListener('click', function() {
+    if (count >= multiplierCost) {
+        count -= multiplierCost;
+        cookiesSpent += multiplierCost;
+        multiplier *= 1.5;
+        multiplierCost = Math.ceil(multiplierCost * 2.9);
+        updateCount();
+        updateStats();
+        multiplierBtn.innerHTML = `CPS Multiplier<br><small>Increases your clicking power<br>Cost: ${multiplierCost} cookies</small>`;
+        alert("Multiplier bought! Your clicks now produces more cookies!");
+        updateCPS();
+    } else {
+        alert("You need minimum " + multiplierCost + " cookies!");
+    }
+});
+
+// Shop button -> buy AutoClicker (multiple purchases possible)
+shopBtn.addEventListener('click', function() {
+    if (count >= shopCost) {
+        count -= shopCost;
+        cookiesSpent += shopCost;
+        updateCount();
+
+        autoClickerCount += 0.5; // Increase autoclicker count by 0.5
+        updateCPS();
+        updateStats();
+
+        // Start a new interval for this autoclicker
+        setInterval(() => {
+            count += 1 * multiplier;
+            allTimeCookies += 1 * multiplier;
+            updateCount();
+            updateStats();
+        }, AutoRate);
+
+        shopCost = Math.ceil(shopCost * 2.9);
+        shopBtn.innerHTML = `Grandma<br><small>Produces cookies automatically<br>Cost: ${shopCost} cookies</small>`;
+        alert("Grandma bought! Your multiplier is now x" + multiplier);
+    } else {
+        alert("You need minimum " + shopCost + " cookies!");
+    }
+});
+
+// Auto Clicker button
+autoClickerBtn.addEventListener('click', function() {
     if (count >= autoClickerCost) {
         count -= autoClickerCost;
+        cookiesSpent += autoClickerCost;
         updateCount();
+        updateStats();
 
-        startAutoClicker();
-
-        // Prijs verdubbelt
-        autoClickerCost *= 2;
-        Clicker.textContent = `🛒 Koop Clicker (${autoClickerCost})`;
-
-        alert("Nieuwe Clicker gekocht!");
-    } else {
-        alert("Je hebt minimaal " + autoClickerCost + " cookies nodig!");
-    }
-});
-
-// Oma -> 5 cookies per seconde
-Oma.addEventListener('click', function() {
-    if (count >= OmaCost) {
-        count -= OmaCost;
-        updateCount();
-
+        // Start auto-clicking
         setInterval(() => {
-            count += 5;
+            count += multiplier;
+            allTimeCookies += multiplier;
             updateCount();
-        }, OmaRate);
+            updateStats();
+        }, 1000); // Clicks every second
 
-        // Prijs stijgt flink
-        OmaCost *= 2;
-        Oma.textContent = `👵🏻 Oma (${OmaCost})`;
-
-        alert("Oma aangenomen :D");
+        autoClickerCost = Math.ceil(autoClickerCost * 2.9);
+        autoClickerBtn.innerHTML = `Auto Clicker<br><small>Clicks for you every second<br>Cost: ${autoClickerCost} cookies</small>`;
+        alert("Auto Clicker bought! It will now click for you every second!");
     } else {
-        alert("Je hebt minimaal " + OmaCost + " cookies nodig!");
-    }
-});
-
-// Multiplier button -> verdubbelt multiplier (VOOR DE PLAYER Klik ALLEEN)
-multiplierMouseBtn.addEventListener('click', function() {
-    if (count >= multiplierMouseCost) {
-        count -= multiplierMouseCost;
-        multiplierMouse *= 2;
-        multiplierMouseCost *= 5;
-        updateCount();
-
-        multiplierMouseBtn.textContent = `✨ Koop Multiplier (${multiplierMouseCost})`;
-        alert("Multiplier gekocht! Je cookies tellen nu x" + multiplierMouse);
-    } else {
-        alert("Je hebt minimaal " + multiplierMouseCost + " cookies nodig!");
-    }
-});
-
-// Speed upgrade -> kan maar 2 keer
-SpeedBtn.addEventListener('click', function() {
-    if (count >= 50 && speedCost < 2) {
-        count -= 50;
-        updateCount();
-
-        speedCost++;
-
-        if (speedCost === 1) {
-            AutoRate = 5000; // 5 seconden
-            alert("Speedy Auto gekocht! Je autoclickers zijn nu sneller (5s).");
-            SpeedBtn.textContent = `⚡ Koop Speedy Auto (50) [Nog 1 keer]`;
-        } else if (speedCost === 2) {
-            AutoRate = 2000; // 2 seconden
-            alert("Speedy Auto gekocht! Je autoclickers zijn nu super snel (2s).");
-            SpeedBtn.remove(); // knop verdwijnt
-        }
-
-        restartAutoClickers();
+        alert("You need minimum " + autoClickerCost + " cookies!");
     }
 });
 
@@ -103,25 +109,20 @@ function updateCount() {
     countDiv.textContent = count;
 }
 
-// Start een nieuwe autoclicker
-function startAutoClicker() {
-    let interval = setInterval(() => {
-        count += 1;
-        updateCount();
-    }, AutoRate);
-    autoClickers.push(interval);
+// Update CPS display
+function updateCPS() {
+    cpsDiv.textContent = "per second: " + (autoClickerCount * multiplier).toFixed(1);
 }
 
-// Stop alle autoclickers en start ze opnieuw met de nieuwe snelheid
-function restartAutoClickers() {
-    // stop alle oude intervals
-    autoClickers.forEach(clearInterval);
-    autoClickers = [];
-
-    // start opnieuw voor elke gekochte autoclicker
-    let amount = Math.log2(autoClickerCost / 10); // bereken aantal gekochte autoclickers
-    for (let i = 0; i < amount; i++) {
-        startAutoClicker();
-    }
+// Update statistics display
+function updateStats() {
+    if (totalCookiesDisplay) totalCookiesDisplay.textContent = count;
+    if (currentCPSDisplay) currentCPSDisplay.textContent = (autoClickerCount * multiplier).toFixed(1);
+    if (totalClicksDisplay) totalClicksDisplay.textContent = totalClicks;
+    if (grandmaCountDisplay) grandmaCountDisplay.textContent = (autoClickerCount * 2).toFixed(0);
+    if (cookiesSpentDisplay) cookiesSpentDisplay.textContent = cookiesSpent;
+    if (allTimeCookiesDisplay) allTimeCookiesDisplay.textContent = allTimeCookies;
 }
+
+
 
