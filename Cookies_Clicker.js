@@ -4,12 +4,15 @@ const btn = document.getElementById('cookieBtn');
 const Clicker = document.getElementById('Clicker');
 const Oma = document.getElementById('Oma');
 const multiplierMouseBtn = document.getElementById('multiplierMouseBtn');
-const AutoRate = 10000; // 10 seconde
-const OmaRate = 5000; // 5 seconde
+const SpeedBtn = document.getElementById('SpeedyAuto');
+let autoClickers = [];
+let AutoRate = 10000; // start = 10 sec
+const OmaRate = 1000; // 1 seconde
 let multiplierMouse = 1;
 let multiplierMouseCost = 100;
-let autoClickerCost = 20;
+let autoClickerCost = 10;
 let OmaCost = 125;
+let speedCost = 0;
 
 // Cookie button
 btn.addEventListener('click', function() {
@@ -25,14 +28,10 @@ Clicker.addEventListener('click', function() {
         count -= autoClickerCost;
         updateCount();
 
-        // Start een nieuwe interval voor deze autoclicker
-        setInterval(() => {
-            count += 3;
-            updateCount();
-        }, AutoRate);
+        startAutoClicker();
 
         // Prijs verdubbelt
-        autoClickerCost *= 5;
+        autoClickerCost *= 2;
         Clicker.textContent = `🛒 Koop Clicker (${autoClickerCost})`;
 
         alert("Nieuwe Clicker gekocht!");
@@ -40,20 +39,20 @@ Clicker.addEventListener('click', function() {
         alert("Je hebt minimaal " + autoClickerCost + " cookies nodig!");
     }
 });
+
+// Oma -> 5 cookies per seconde
 Oma.addEventListener('click', function() {
     if (count >= OmaCost) {
         count -= OmaCost;
         updateCount();
 
-        // Start een nieuwe interval voor deze Oma
         setInterval(() => {
             count += 5;
-
             updateCount();
         }, OmaRate);
 
-        // Prijs stijging
-        OmaCost *= 5;
+        // Prijs stijgt flink
+        OmaCost *= 2;
         Oma.textContent = `👵🏻 Oma (${OmaCost})`;
 
         alert("Oma aangenomen :D");
@@ -77,7 +76,52 @@ multiplierMouseBtn.addEventListener('click', function() {
     }
 });
 
+// Speed upgrade -> kan maar 2 keer
+SpeedBtn.addEventListener('click', function() {
+    if (count >= 50 && speedCost < 2) {
+        count -= 50;
+        updateCount();
+
+        speedCost++;
+
+        if (speedCost === 1) {
+            AutoRate = 5000; // 5 seconden
+            alert("Speedy Auto gekocht! Je autoclickers zijn nu sneller (5s).");
+            SpeedBtn.textContent = `⚡ Koop Speedy Auto (50) [Nog 1 keer]`;
+        } else if (speedCost === 2) {
+            AutoRate = 2000; // 2 seconden
+            alert("Speedy Auto gekocht! Je autoclickers zijn nu super snel (2s).");
+            SpeedBtn.remove(); // knop verdwijnt
+        }
+
+        restartAutoClickers();
+    }
+});
+
 // Handige functie
 function updateCount() {
     countDiv.textContent = count;
 }
+
+// Start een nieuwe autoclicker
+function startAutoClicker() {
+    let interval = setInterval(() => {
+        count += 1;
+        updateCount();
+    }, AutoRate);
+    autoClickers.push(interval);
+}
+
+// Stop alle autoclickers en start ze opnieuw met de nieuwe snelheid
+function restartAutoClickers() {
+    // stop alle oude intervals
+    autoClickers.forEach(clearInterval);
+    autoClickers = [];
+
+    // start opnieuw voor elke gekochte autoclicker
+    let amount = Math.log2(autoClickerCost / 10); // bereken aantal gekochte autoclickers
+    for (let i = 0; i < amount; i++) {
+        startAutoClicker();
+    }
+}
+
