@@ -1,15 +1,15 @@
 let count = 0;
 const countDiv = document.getElementById('count');
 const btn = document.getElementById('cookieBtn');
-const shopBtn = document.getElementById('shopBtn');
+const GrandmaBtn = document.getElementById('GrandmaBtn');
 const multiplierBtn = document.getElementById('multiplierBtn');
-const autoClickerBtn = document.getElementById('autoClickerBtn');
+const supplierBtn = document.getElementById('supplierBtn');
 const cpsDiv = document.getElementById('cps');
 const AutoRate = 1000;  
 let multiplier = 1;
 let multiplierCost = 50;
-let shopCost = 250;
-let autoClickerCost = 1000;
+let GrandmaCost = 50;
+let supplierCost = 2000;
 let autoClickerCount = 0;
 
 // Stats tracking variables
@@ -41,7 +41,7 @@ multiplierBtn.addEventListener('click', function() {
     if (count >= multiplierCost) {
         count -= multiplierCost;
         cookiesSpent += multiplierCost;
-        multiplier *= 1.5;
+        multiplier *= 2;
         multiplierCost = Math.ceil(multiplierCost * 2.9);
         updateCount();
         updateStats();
@@ -54,53 +54,53 @@ multiplierBtn.addEventListener('click', function() {
 });
 
 // Shop button -> buy AutoClicker (multiple purchases possible)
-shopBtn.addEventListener('click', function() {
-    if (count >= shopCost) {
-        count -= shopCost;
-        cookiesSpent += shopCost;
+GrandmaBtn.addEventListener('click', function() {
+    if (count >= GrandmaCost) {
+        count -= GrandmaCost;
+        cookiesSpent += GrandmaCost;
         updateCount();
 
-        autoClickerCount += 0.5; // Increase autoclicker count by 0.5
+        autoClickerCount += 2; // Increase autoclicker count by 2
         updateCPS();
         updateStats();
 
         // Start a new interval for this autoclicker
         setInterval(() => {
-            count += 1 * multiplier;
-            allTimeCookies += 1 * multiplier;
+            count += multiplier;
+            allTimeCookies += multiplier;
             updateCount();
             updateStats();
         }, AutoRate);
 
-        shopCost = Math.ceil(shopCost * 2.9);
-        shopBtn.innerHTML = `Grandma<br><small>Produces cookies automatically<br>Cost: ${shopCost} cookies</small>`;
-        alert("Grandma bought! Your multiplier is now x" + multiplier);
+        GrandmaCost = Math.ceil(GrandmaCost * 2.9);
+        GrandmaBtn.innerHTML = `Grandma<br><small>Produces cookies automatically<br>Cost: ${GrandmaCost} cookies</small>`;
+        alert("Grandma bought! and you have " + autoClickerCount + " grandmas!");
     } else {
-        alert("You need minimum " + shopCost + " cookies!");
+        alert("You need minimum " + GrandmaCost + " cookies!");
     }
 });
 
 // Auto Clicker button
-autoClickerBtn.addEventListener('click', function() {
-    if (count >= autoClickerCost) {
-        count -= autoClickerCost;
-        cookiesSpent += autoClickerCost;
+supplierBtn.addEventListener('click', function() {
+    if (count >= supplierCost) {
+        count -= supplierCost;
+        cookiesSpent += supplierCost;
         updateCount();
         updateStats();
 
         // Start auto-clicking
         setInterval(() => {
-            count += multiplier;
-            allTimeCookies += multiplier;
+            count +=5 * multiplier;
+            allTimeCookies += 5 * multiplier;
             updateCount();
             updateStats();
         }, 1000); // Clicks every second
 
-        autoClickerCost = Math.ceil(autoClickerCost * 2.9);
-        autoClickerBtn.innerHTML = `Auto Clicker<br><small>Clicks for you every second<br>Cost: ${autoClickerCost} cookies</small>`;
+        supplierCost = Math.ceil(supplierCost * 2.9);
+        supplierBtn.innerHTML = `Supplier<br><small>Clicks for you every second<br>Cost: ${supplierCost} cookies</small>`;
         alert("Auto Clicker bought! It will now click for you every second!");
     } else {
-        alert("You need minimum " + autoClickerCost + " cookies!");
+        alert("You need minimum " + supplierCost + " cookies!");
     }
 });
 
