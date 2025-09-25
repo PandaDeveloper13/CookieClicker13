@@ -5,15 +5,60 @@
     <title>Cookie Clicker</title>
     <script src="Cookies_Clicker.js" defer></script>
     <link rel="stylesheet" href="Cookies_Clicker.css">
+    
 </head>
 <body>
-    <div id="count">0</div>
-    <img class="cookie_img" src="cookie.png" alt="Cookie" width="100" id="cookieBtn"><br>
-    <button id="Clicker">🛒 Clicker (10)</button>
-    <button id="multiplierMouseBtn">✨ Multiplier (100)</button>
-    <button id="Oma">👵🏻 Oma (125)</button>
-    <button id="SpeedyAuto">⚡ Auto Speed Upgrade (50)</button>
+
+<input type="text" id="playerName" placeholder="Enter your bakery name">
+
+<div class="cookie-center-wrapper">
+    <div class="cookie-area">
+        <div id="count">0 cookies</div>
+        <div id="cps">per second: 0</div>
+        <img src="cookie.png" alt="Cookie" width="250" id="cookieBtn">
+    </div>
+
+    <div class="side-buttons">
+        <h3>🛒 Store</h3>
+        <button id="multiplierBtn">CPS<br><small>Doubles your clicking power<br>Cost: 50 cookies</small></button>
+        <button id="shopBtn">Grandma<br><small>Produces cookies automatically<br>Cost: 250 cookies</small></button>
+        <button id="supplierBtn">Supplier<br><small>Increases cookie production<br>Cost: 2000 cookies</small></button>
+        <button id="chefBtn">Pastry Chef<br><small>Professionally baked cookies<br>Cost: 5000 cookies</small></button>
+        <button id="bankBtn">Bank<br><small>Produces cookies over time<br>Cost: 20000 cookies</small></button>
+        
+        <button id="SpeedyAuto">⚡ Auto Speed Upgrade (50)</button>
+    </div>
+</div>
+
+<div class="stats-window">
+    <h4>Statistics</h4>
+    <div class="stats-content">
+        <div class="stat-item">
+            <span class="stat-label">Total Cookies:</span>
+            <span class="stat-value" id="totalCookies">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Current CPS:</span>
+            <span class="stat-value" id="currentCPS">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Total Clicks:</span>
+            <span class="stat-value" id="totalClicks">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Grandmas:</span>
+            <span class="stat-value" id="grandmaCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Cookies Spent:</span>
+            <span class="stat-value" id="cookiesSpent">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">All Time:</span>
+            <span class="stat-value" id="allTimeCookies">0</span>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
-
