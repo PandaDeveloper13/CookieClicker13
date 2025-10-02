@@ -9,7 +9,11 @@
 </head>
 <body>
 
-<input type="text" id="playerName" placeholder="Enter your bakery name">
+<div class="top-bar">
+    <button id="optionsToggleBtn" class="options-toggle-btn" aria-controls="optionsWindow" aria-expanded="false">Options</button>
+    <input type="text" id="playerName" placeholder="Enter your bakery name">
+    <button id="statsToggleBtn" class="stats-toggle-btn" aria-controls="statsWindow" aria-expanded="false">Show Stats</button>
+</div>
 
 <div class="cookie-center-wrapper">
     <div class="cookie-area">
@@ -20,17 +24,24 @@
 
     <div class="side-buttons">
         <h3>🛒 Store</h3>
-        <button id="multiplierBtn">CPS<br><small>Doubles your clicking power<br>Cost: 50 cookies</small></button>
-        <button id="GrandmaBtn">Grandma<br><small>Produces cookies automatically<br>Cost: 250 cookies</small></button>
+        <button id="multiplierBtn">CPS<br><small>Increases your clicking power<br>Cost: 50 cookies</small></button>
+        <button id="shopBtn">Grandma<br><small>Produces cookies automatically<br>Cost: 250 cookies</small></button>
         <button id="supplierBtn">Supplier<br><small>Increases cookie production<br>Cost: 2000 cookies</small></button>
         <button id="chefBtn">Pastry Chef<br><small>Professionally baked cookies<br>Cost: 5000 cookies</small></button>
         <button id="bankBtn">Bank<br><small>Produces cookies over time<br>Cost: 20000 cookies</small></button>
-        
-        <button id="SpeedyAuto">⚡ Auto Speed Upgrade (50)</button>
+        <button id="templeBtn">Temple<br><small>Produces even more cookies over time<br>Cost: 100000 cookies</small></button>
     </div>
+
+    <!-- Separate Enhancements section -->
+    <section class="enhancements-section">
+        <h4 class="enhancements-title">Enhancements</h4>
+        <div class="enhancements" id="enhancements">
+            <!-- Add enhancement items here -->
+        </div>
+    </section>
 </div>
 
-<div class="stats-window">
+<div class="stats-window hidden" id="statsWindow">
     <h4>Statistics</h4>
     <div class="stats-content">
         <div class="stat-item">
@@ -46,8 +57,20 @@
             <span class="stat-value" id="totalClicks">0</span>
         </div>
         <div class="stat-item">
-            <span class="stat-label">Grandmas:</span>
+            <span class="stat-label">Grandma:</span>
             <span class="stat-value" id="grandmaCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Supplier:</span>
+            <span class="stat-value" id="supplierCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Pastry Chef:</span>
+            <span class="stat-value" id="chefCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Bank:</span>
+            <span class="stat-value" id="bankCount">0</span>
         </div>
         <div class="stat-item">
             <span class="stat-label">Cookies Spent:</span>
@@ -57,6 +80,17 @@
             <span class="stat-label">All Time:</span>
             <span class="stat-value" id="allTimeCookies">0</span>
         </div>
+    </div>
+</div>
+
+<div class="options-window hidden" id="optionsWindow">
+    <h4>Options</h4>
+    <div class="options-content">
+        <label for="languageSelect">Language:</label>
+        <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="nl">Nederlands</option>
+        </select>
     </div>
 </div>
 
