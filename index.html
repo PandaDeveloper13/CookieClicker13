@@ -5,7 +5,6 @@
     <title>Cookie Clicker</title>
     <script src="Cookies_Clicker.js" defer></script>
     <link rel="stylesheet" href="Cookies_Clicker.css">
-    
 </head>
 <body>
 
@@ -27,18 +26,32 @@
         <button id="multiplierBtn">CPS<br><small>Increases your clicking power<br>Cost: 50 cookies</small></button>
         <button id="shopBtn">Grandma<br><small>Produces cookies automatically<br>Cost: 250 cookies</small></button>
         <button id="supplierBtn">Supplier<br><small>Increases cookie production<br>Cost: 2000 cookies</small></button>
-        <button id="chefBtn">Pastry Chef<br><small>Professionally baked cookies<br>Cost: 5000 cookies</small></button>
+        <button id="chefBtn">Pastry Chef<br><small>Speeds up all production<br>Cost: 5000 cookies</small></button>
         <button id="bankBtn">Bank<br><small>Produces cookies over time<br>Cost: 20000 cookies</small></button>
-        <button id="templeBtn">Temple<br><small>Produces even more cookies over time<br>Cost: 100000 cookies</small></button>
+        <button id="templeBtn">Temple<br><small>Produces even more cookies<br>Cost: 100000 cookies</small></button>
+    </div>
+    <div class="boost-section">
+        <h3>Boosts</h3>
+        <button id="chefBoostBtn" disabled>Activate Chef Boost</button>
+        <div id="chefBoostStatus">No boost active</div>
     </div>
 
-    <!-- Separate Enhancements section -->
     <section class="enhancements-section">
         <h4 class="enhancements-title">Enhancements</h4>
         <div class="enhancements" id="enhancements">
-            <!-- Add enhancement items here -->
+            <button id="enhBoostTime" class="hidden">
+                ChefBoost Upgrade V1: +15s Duration<br><small>Cost: 10000 cookies</small>
+            </button>
+            <button id="enhCooldown" class="hidden">
+                ChefBoost Upgrade V2: -60s Cooldown<br><small>Cost: 25000 cookies</small>
+            </button>
+            <button id="enhPower" class="hidden">
+                ChefBoost Upgrade V3: Stronger Boost<br><small>Cost: 50000 cookies</small>
+            </button>
         </div>
     </section>
+
+
 </div>
 
 <div class="stats-window hidden" id="statsWindow">

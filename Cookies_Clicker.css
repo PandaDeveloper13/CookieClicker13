@@ -280,3 +280,15 @@ body {
 #languageSelect:focus {
     border-color: rgba(255,255,255,0.5);
 }
+.hidden {
+    display: none;
+}
+
+/* optioneel: enhancements knoppen wat mooier maken */
+.enhancements button {
+    display: block;
+    margin: 5px auto;
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
