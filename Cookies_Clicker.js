@@ -28,6 +28,7 @@ const allTimeCookiesDisplay = document.getElementById('allTimeCookies');
 const grandmaCountDisplay = document.getElementById('grandmaCount');
 const supplierCountDisplay = document.getElementById('supplierCount');
 const chefCountDisplay = document.getElementById('chefCount');
+const bakkerijCountDisplay = document.getElementById('bakkerijCount');
 const bankCountDisplay = document.getElementById('bankCount');
 const currentCPSDisplay = document.getElementById('currentCPS');
 
@@ -91,14 +92,16 @@ const multiplierBtn = document.getElementById('multiplierBtn');
 const shopBtn = document.getElementById('shopBtn');
 const supplierBtn = document.getElementById('supplierBtn');
 const chefBtn = document.getElementById('chefBtn');
+const bakkerijBtn = document.getElementById('bakkerijbtn');
 const bankBtn = document.getElementById('bankBtn');
 const templeBtn = document.getElementById('templeBtn');
 
 const grandma = new Upgrade("Grandma", 250, 2, 3.3, shopBtn, grandmaCountDisplay, "production");
-const supplier = new Upgrade("Supplier", 2000, 5, 3.4, supplierBtn, supplierCountDisplay, "multiplier");
-const chef = new Upgrade("Pastry Chef", 5000, 5, 3.5, chefBtn, chefCountDisplay, "production"); // autoclicker
-const bank = new Upgrade("Bank", 20000, 100, 3.6, bankBtn, bankCountDisplay, "multiplier");
-const temple = new Upgrade("Temple", 100000, 500, 4.0, templeBtn, null, "production");
+const supplier = new Upgrade("Supplier", 2000, 5, 3.4, supplierBtn, supplierCountDisplay, "production");
+const chef = new Upgrade("Pastry Chef", 5000, 5, 3.5, chefBtn, chefCountDisplay, "production");
+const bakkerij = new Upgrade("Bakkerij", 10000, 10, 3.5, bakkerijBtn, bakkerijCountDisplay, "production");
+const bank = new Upgrade("Bank", 20000, 100, 3.6, bankBtn, bankCountDisplay, "production");
+const temple = new Upgrade("Temple", 100000, 500, 4.0, templeBtn,  null, "production");
 
 // ------------------ Core Functions ------------------
 function updateCount() {
@@ -123,6 +126,7 @@ function updateStats() {
     supplier.updateDisplay();
     chef.updateDisplay();
     bank.updateDisplay();
+    bakkerij.updateDisplay();
     updateBoostButton();
     updateEnhancements();
 }
