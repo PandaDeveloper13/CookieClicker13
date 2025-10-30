@@ -21,36 +21,44 @@
         <img src="cookie.png" alt="Cookie" width="250" id="cookieBtn">
     </div>
 
-    <div class="side-buttons">
-        <h3>🛒 Store</h3>
-        <button id="multiplierBtn">CPS<br><small>Increases your clicking power<br>Cost: 50 cookies</small></button>
-        <button id="shopBtn">Grandma<br><small>Produces cookies automatically<br>Cost: 250 cookies</small></button>
-        <button id="supplierBtn">Supplier<br><small>Increases cookie production<br>Cost: 2000 cookies</small></button>
-        <button id="chefBtn">Pastry Chef<br><small>Speeds up all production<br>Cost: 5000 cookies</small></button>
-        <button id="bakkerijbtn">Bakkerij<br><small>Bakkerij om meer te kokekn<br>Cost: 1000 cookies</small></button>
-        <button id="bankBtn">Bank<br><small>Produces cookies over time<br>Cost: 20000 cookies</small></button>
-        <button id="templeBtn">Temple<br><small>Produces even more cookies<br>Cost: 100000 cookies</small></button>
+    <div class="side-buttons-wrapper">
+        <!-- Store -->
+        <div class="side-buttons">
+            <h3>🛒 Store</h3>
+            <button id="multiplierBtn">CPS<br><small>Increases your clicking power<br>Cost: 50 cookies</small></button>
+            <button id="shopBtn">Grandma<br><small>Produces cookies automatically<br>Cost: 250 cookies</small></button>
+            <button id="supplierBtn">Supplier<br><small>Increases cookie production<br>Cost: 2000 cookies</small></button>
+            <button id="chefBtn">Pastry Chef<br><small>Speeds up all production<br>Cost: 5000 cookies</small></button>
+            <button id="bakkerijbtn">Bakkerij<br><small>Bakkerij om meer te koken<br>Cost: 1000 cookies</small></button>
+            <button id="bankBtn">Bank<br><small>Produces cookies over time<br>Cost: 20000 cookies</small></button>
+            <button id="templeBtn">Temple<br><small>Produces even more cookies<br>Cost: 100000 cookies</small></button>
+        </div>
+
     </div>
+<!-- 🔹 Small Top Controls Row -->
+<div class="top-controls">
     <div class="boost-section">
-        <h3>Boosts</h3>
+        <h4>Boosts</h4>
         <button id="chefBoostBtn" disabled>Activate Chef Boost</button>
         <div id="chefBoostStatus">No boost active</div>
     </div>
 
-    <section class="enhancements-section">
-        <h4 class="enhancements-title">Enhancements</h4>
-        <div class="enhancements" id="enhancements">
+    <div class="enhancements-section">
+        <h4>Enhancements</h4>
+        <div class="enhancements">
             <button id="enhBoostTime" class="hidden">
-                ChefBoost Upgrade V1: +15s Duration<br><small>Cost: 10000 cookies</small>
+                +15s Duration<br><small>Cost: 10000 cookies</small>
             </button>
             <button id="enhCooldown" class="hidden">
-                ChefBoost Upgrade V2: -60s Cooldown<br><small>Cost: 25000 cookies</small>
+                -60s Cooldown<br><small>Cost: 25000 cookies</small>
             </button>
             <button id="enhPower" class="hidden">
-                ChefBoost Upgrade V3: Stronger Boost<br><small>Cost: 50000 cookies</small>
+                Stronger Boost<br><small>Cost: 50000 cookies</small>
             </button>
         </div>
-    </section>
+    </div>
+</div>
+
 
 
 </div>
@@ -83,7 +91,7 @@
             <span class="stat-value" id="chefCount">0</span>
         </div>
         <div class="stat-item">
-            <span class="stat-label">Pastry Chef:</span>
+            <span class="stat-label">Bakkery:</span>
             <span class="stat-value" id="bakkerijCount">0</span>
         </div>
         <div class="stat-item">
@@ -101,9 +109,13 @@
     </div>
 </div>
 
+
 <div class="options-window hidden" id="optionsWindow">
     <h4>Options</h4>
     <div class="options-content">
+        <button id="saveGameBtn">💾 Save Game</button>
+        <button id="loadGameBtn">🔁 Load Game</button>
+        <button id="resetGameBtn">🗑️ Reset Game</button>
         <label for="languageSelect">Language:</label>
         <select id="languageSelect">
             <option value="en">English</option>
@@ -111,6 +123,7 @@
         </select>
     </div>
 </div>
+
 
 </body>
 </html>
