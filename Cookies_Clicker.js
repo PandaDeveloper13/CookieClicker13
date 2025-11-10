@@ -1,5 +1,5 @@
 // ------------------ Global game state ------------------
-let count = 0;
+let count = 1000000;
 let totalClicks = 0;
 let cookiesSpent = 0;
 let allTimeCookies = 0;
@@ -30,6 +30,9 @@ const supplierCountDisplay = document.getElementById('supplierCount');
 const chefCountDisplay = document.getElementById('chefCount');
 const bakkerijCountDisplay = document.getElementById('bakkerijCount');
 const bankCountDisplay = document.getElementById('bankCount');
+const FabriekCountDisplay = document.getElementById('FabriekCount');
+const templeCountDisplay = document.getElementById('templeCount');
+const corporateCountDisplay = document.getElementById('corporateCount');
 const currentCPSDisplay = document.getElementById('currentCPS');
 
 // ------------------ Base AutoClicker (Parent) ------------------
@@ -89,13 +92,18 @@ const chefBtn = document.getElementById('chefBtn');
 const bakkerijBtn = document.getElementById('bakkerijbtn');
 const bankBtn = document.getElementById('bankBtn');
 const templeBtn = document.getElementById('templeBtn');
+const corporateBtn = document.getElementById('corporateBtn');
+const FabriekBtn = document.getElementById('FabriekBtn');
 
-const grandma = new AutoClicker("Grandma", 100, 2, 1.3, shopBtn, grandmaCountDisplay);
-const supplier = new AutoClicker("Supplier", 500, 10, 2.4, supplierBtn, supplierCountDisplay);
-const chef = new AutoClicker("Pastry Chef", 1500, 25, 1.5, chefBtn, chefCountDisplay);
-const bakkerij = new AutoClicker("Bakkerij", 10000, 200, 2.5, bakkerijBtn, bakkerijCountDisplay);
-const bank = new AutoClicker("Bank", 35000, 500, 2.6, bankBtn, bankCountDisplay);
-const temple = new AutoClicker("Temple", 100000, 1000, 3.0, templeBtn, null);
+const grandma = new AutoClicker("Grandma", 100, 2, 1.1, shopBtn, grandmaCountDisplay);
+const supplier = new AutoClicker("Supplier", 500, 100, 1.1, supplierBtn, supplierCountDisplay);
+const chef = new AutoClicker("Pastry Chef", 1500, 250, 1.2, chefBtn, chefCountDisplay);
+const bakkerij = new AutoClicker("Bakkerij", 10000, 2000, 1.3, bakkerijBtn, bakkerijCountDisplay);
+const bank = new AutoClicker("Bank", 25000, 5000, 1.3, bankBtn, bankCountDisplay);
+const Fabriek = new AutoClicker("Fabriek", 75000, 8000, 1.2, FabriekBtn , FabriekCountDisplay);
+const temple = new AutoClicker("Temple", 100000, 10000, 1.2, templeBtn, templeCountDisplay);
+const corporation = new AutoClicker("Corporation", 500000, 50000, 1.2, corporateBtn, corporateCountDisplay);
+
 
 
 
@@ -213,50 +221,102 @@ const enhPowerBtn = document.getElementById('enhPower');
 
 let enhBoostTimeCost = 10000;
 let enhCooldownCost = 25000;
-let enhPowerCost = 50000;
+let enhPowerCost   = 50000;
 
+// ------- Helpers: mark done + (optional) persistence -------
+function markDone(btn, key) {
+    if (!btn) return;
+    btn.dataset.done = "1";
+    btn.classList.add("hidden");
+    try { localStorage.setItem(key, "1"); } catch {}
+}
+
+function restoreDone(btn, key) {
+    try {
+        if (localStorage.getItem(key) === "1") {
+            btn?.classList.add("hidden");
+            if (btn) btn.dataset.done = "1";
+        }
+    } catch {}
+}
+
+// Restore completion state on load
+restoreDone(enhBoostTimeBtn,  "enhBoostTimeDone");
+restoreDone(enhCooldownBtn,   "enhCooldownDone");
+restoreDone(enhPowerBtn,      "enhPowerDone");
+
+// ------- Only show the first step when appropriate, never after all done -------
 function updateEnhancements() {
-    if (chef.count > 0 && enhBoostTimeBtn.classList.contains("hidden") &&
-        enhCooldownBtn.classList.contains("hidden") &&
-        enhPowerBtn.classList.contains("hidden")) {
+    const done1 = enhBoostTimeBtn?.dataset.done === "1";
+    const done2 = enhCooldownBtn?.dataset.done === "1";
+    const done3 = enhPowerBtn?.dataset.done === "1";
+
+    // If everything is completed, never show anything again.
+    if (done1 && done2 && done3) return;
+
+    // Show the first button only when all are hidden, user has a chef,
+    // and the first one hasn't been completed yet.
+    if (
+        chef.count > 0 &&
+        enhBoostTimeBtn &&
+        enhBoostTimeBtn.classList.contains("hidden") &&
+        !done1 &&
+        (enhCooldownBtn?.classList.contains("hidden") ?? true) &&
+        (enhPowerBtn?.classList.contains("hidden") ?? true)
+    ) {
         enhBoostTimeBtn.classList.remove("hidden");
     }
 }
 
-enhBoostTimeBtn.addEventListener('click', () => {
+enhBoostTimeBtn?.addEventListener('click', () => {
     if (count >= enhBoostTimeCost) {
         count -= enhBoostTimeCost;
         cookiesSpent += enhBoostTimeCost;
         chefBoostDuration += 15000;
         updateCount();
         updateStats();
-        enhBoostTimeBtn.classList.add("hidden");
-        enhCooldownBtn.classList.remove("hidden");
-    } else alert("Not enough cookies!");
+
+        // permanently hide BoostTime, reveal Cooldown
+        markDone(enhBoostTimeBtn, "enhBoostTimeDone");
+        enhCooldownBtn?.classList.remove("hidden");
+    } else if (enhBoostTimeBtn) {
+        // optional: UI feedback for insufficient cookies
+    } else {
+        alert("Not enough cookies!");
+    }
 });
 
-enhCooldownBtn.addEventListener('click', () => {
+enhCooldownBtn?.addEventListener('click', () => {
     if (count >= enhCooldownCost) {
         count -= enhCooldownCost;
         cookiesSpent += enhCooldownCost;
         chefCooldownTime = Math.max(60000, chefCooldownTime - 60000);
         updateCount();
         updateStats();
-        enhCooldownBtn.classList.add("hidden");
-        enhPowerBtn.classList.remove("hidden");
-    } else alert("Not enough cookies!");
+
+        // permanently hide Cooldown, reveal Power
+        markDone(enhCooldownBtn, "enhCooldownDone");
+        enhPowerBtn?.classList.remove("hidden");
+    } else {
+        alert("Not enough cookies!");
+    }
 });
 
-enhPowerBtn.addEventListener('click', () => {
+enhPowerBtn?.addEventListener('click', () => {
     if (count >= enhPowerCost) {
         count -= enhPowerCost;
         cookiesSpent += enhPowerCost;
         chefBoostFactor = 0.3;
         updateCount();
         updateStats();
-        enhPowerBtn.classList.add("hidden");
-    } else alert("Not enough cookies!");
+
+        // permanently hide Power; nothing else shows after this
+        markDone(enhPowerBtn, "enhPowerDone");
+    } else {
+        alert("Not enough cookies!");
+    }
 });
+
 // ------------------ SAVE / LOAD SYSTEM ------------------
 
 // Welke data we willen bewaren
