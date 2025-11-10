@@ -1,5 +1,5 @@
 // ------------------ Global game state ------------------
-let count = 1000000;
+let count = 10000;
 let totalClicks = 0;
 let cookiesSpent = 0;
 let allTimeCookies = 0;
@@ -147,9 +147,11 @@ function startAutoProduction() {
             updateStats();
         }, currentInterval);
     }
+    startGrandmaBonusTimer();
 }
 
-// ------------------ Cookie button ------------------
+
+// cookie button
 btn.addEventListener('click', function() {
     count += multiplier;
     totalClicks++;
@@ -159,8 +161,34 @@ btn.addEventListener('click', function() {
     btn.classList.add('clicked');
     setTimeout(() => btn.classList.remove('clicked'), 200);
 });
+// grandma bonus
+let grandmaBonusTimer = null;
 
-// ------------------ Chef Boost ------------------
+// Tweak these to balance
+const GRANDMA_BONUS_INTERVAL_MS = 1000; // check every second
+const GRANDMA_BONUS_CHANCE      = 0.02; // 20% chance per tick
+const GRANDMA_BONUS_AMOUNT      = 25;   // per grandma when it hits
+
+function startGrandmaBonusTimer() {
+    // Only start once, and only if player owns at least 1 grandma
+    if (grandmaBonusTimer || grandma.count <= 0) return;
+
+    grandmaBonusTimer = setInterval(() => {
+        if (grandma.count <= 0) return; // safety if ever reduced
+        if (Math.random() < GRANDMA_BONUS_CHANCE) {
+            const bonus = GRANDMA_BONUS_AMOUNT * grandma.count;
+            count += bonus;
+            allTimeCookies += bonus;
+            // (Optional) tiny feedback:
+            // console.log(`🧓 Grandma bonus +${bonus}`);
+            updateCount();
+            updateCPS();
+            updateStats();
+        }
+    }, GRANDMA_BONUS_INTERVAL_MS);
+}
+
+// chef boost
 const chefBoostBtn = document.getElementById('chefBoostBtn');
 const chefBoostStatus = document.getElementById('chefBoostStatus');
 let chefBoostActive = false;
@@ -306,7 +334,7 @@ enhPowerBtn?.addEventListener('click', () => {
     if (count >= enhPowerCost) {
         count -= enhPowerCost;
         cookiesSpent += enhPowerCost;
-        chefBoostFactor = 0.3;
+        chefBoostFactor = 0.2;
         updateCount();
         updateStats();
 
@@ -518,3 +546,4 @@ if (resetGameBtn) resetGameBtn.addEventListener('click', resetGame);
 updateCount();
 updateCPS();
 updateStats();
+startAutoProduction();
