@@ -1,44 +1,58 @@
 // ------------------ Global game state ------------------
-let count = 10000;
+let count = 1500000;
 let totalClicks = 0;
 let cookiesSpent = 0;
 let allTimeCookies = 0;
 let multiplier = 1;
-let autoClickerCount = 0;
+
+let autoClickerCount = 0;            // som van alle effecten * counts
 let autoOutputMultiplier = 1;
 let autoProductionInterval = null;
-let baseInterval = 1000;
+
+let baseInterval = 1000;             // ms tussen ticks
 let currentInterval = baseInterval;
 
-// Boost settings
-let chefBoostDuration = 15000;
-let chefCooldownTime = 300000;
-let chefBoostFactor = 0.5;
+// ------------------ Chef Boost settings ------------------
+let chefBoostDuration = 15000;       // ms
+let chefCooldownTime  = 300000;      // ms
+let chefBoostFactor   = 0.5;         // interval multiplier tijdens boost (lager = sneller)
 
-
+// ------------------ DOM refs ------------------
 const btn = document.getElementById('cookieBtn');
 const countDiv = document.getElementById('count');
 const cpsDiv = document.getElementById('cps');
 
-// Stats displays
-const totalCookiesDisplay = document.getElementById('totalCookies');
-const totalClicksDisplay = document.getElementById('totalClicks');
-const cookiesSpentDisplay = document.getElementById('cookiesSpent');
-const allTimeCookiesDisplay = document.getElementById('allTimeCookies');
-const grandmaCountDisplay = document.getElementById('grandmaCount');
-const supplierCountDisplay = document.getElementById('supplierCount');
-const chefCountDisplay = document.getElementById('chefCount');
-const bakkerijCountDisplay = document.getElementById('bakkerijCount');
-const bankCountDisplay = document.getElementById('bankCount');
-const FabriekCountDisplay = document.getElementById('FabriekCount');
-const templeCountDisplay = document.getElementById('templeCount');
-const corporateCountDisplay = document.getElementById('corporateCount');
-const currentCPSDisplay = document.getElementById('currentCPS');
+let totalCookiesDisplay = document.getElementById('totalCookies');
+let totalClicksDisplay = document.getElementById('totalClicks');
+let cookiesSpentDisplay = document.getElementById('cookiesSpent');
+let allTimeCookiesDisplay = document.getElementById('allTimeCookies');
+
+let grandmaCountDisplay = document.getElementById('grandmaCount');
+let supplierCountDisplay = document.getElementById('supplierCount');
+let chefCountDisplay = document.getElementById('chefCount');
+let bakkerijCountDisplay = document.getElementById('bakkerijCount');
+let bankCountDisplay = document.getElementById('bankCount');
+let FabriekCountDisplay = document.getElementById('FabriekCount');
+let templeCountDisplay = document.getElementById('templeCount');
+let corporateCountDisplay = document.getElementById('corporateCount');
+
+let currentCPSDisplay = document.getElementById('currentCPS');
+
+const multiplierBtn = document.getElementById('multiplierBtn');
+const shopBtn = document.getElementById('shopBtn');
+const supplierBtn = document.getElementById('supplierBtn');
+const chefBtn = document.getElementById('chefBtn');
+const bakkerijBtn = document.getElementById('bakkerijbtn'); // kleine 'b' zoals jouw HTML
+const bankBtn = document.getElementById('bankBtn');
+const templeBtn = document.getElementById('templeBtn');
+const corporateBtn = document.getElementById('corporateBtn');
+const FabriekBtn = document.getElementById('FabriekBtn');
 
 // ------------------ Base AutoClicker (Parent) ------------------
 class AutoClicker {
     constructor(name, baseCost, product, costGrowth, buttonEl, displayEl) {
         this.name = name;
+        this.baseCost = baseCost; // voor reset & correcte kostenberekening
         this.cost = baseCost;
         this.effect = product;
         this.costGrowth = costGrowth;
@@ -57,20 +71,26 @@ class AutoClicker {
             count -= this.cost;
             cookiesSpent += this.cost;
             this.count++;
-            this.cost = Math.ceil(this.cost * this.costGrowth);
+            // cost = baseCost * growth^count (consistent en exact)
+            this.cost = Math.ceil(this.baseCost * Math.pow(this.costGrowth, this.count));
             autoClickerCount += this.effect;
 
             this.updateButton();
             this.updateDisplay();
-            updateCount();
-            updateCPS();
-            updateStats();
-            startAutoProduction();
+            updateCount(); updateCPS(); updateStats(); startAutoProduction();
         } else {
             alert(`You need at least ${this.cost} cookies for ${this.name}!`);
         }
     }
 
+    reset() {
+        autoClickerCount -= this.effect * this.count;
+        if (autoClickerCount < 0) autoClickerCount = 0;
+        this.count = 0;
+        this.cost = this.baseCost;
+        this.updateButton();
+        this.updateDisplay();
+    }
 
     updateButton() {
         if (this.buttonEl) {
@@ -79,60 +99,49 @@ class AutoClicker {
     }
 
     updateDisplay() {
-        if (this.displayEl) {
-            this.displayEl.textContent = this.count;
-        }
+        if (this.displayEl) this.displayEl.textContent = this.count;
     }
 }
-// ------------------ Create Clickers ------------------
-const multiplierBtn = document.getElementById('multiplierBtn');
-const shopBtn = document.getElementById('shopBtn');
-const supplierBtn = document.getElementById('supplierBtn');
-const chefBtn = document.getElementById('chefBtn');
-const bakkerijBtn = document.getElementById('bakkerijbtn');
-const bankBtn = document.getElementById('bankBtn');
-const templeBtn = document.getElementById('templeBtn');
-const corporateBtn = document.getElementById('corporateBtn');
-const FabriekBtn = document.getElementById('FabriekBtn');
 
+// ------------------ Instances ------------------
 const grandma = new AutoClicker("Grandma", 100, 2, 1.1, shopBtn, grandmaCountDisplay);
-const supplier = new AutoClicker("Supplier", 500, 100, 1.1, supplierBtn, supplierCountDisplay);
+const supplier = new AutoClicker("Supplier", 500, 15, 1.1, supplierBtn, supplierCountDisplay);
 const chef = new AutoClicker("Pastry Chef", 1500, 250, 1.2, chefBtn, chefCountDisplay);
 const bakkerij = new AutoClicker("Bakkerij", 10000, 2000, 1.3, bakkerijBtn, bakkerijCountDisplay);
 const bank = new AutoClicker("Bank", 25000, 5000, 1.3, bankBtn, bankCountDisplay);
-const Fabriek = new AutoClicker("Fabriek", 75000, 8000, 1.2, FabriekBtn , FabriekCountDisplay);
+const Fabriek = new AutoClicker("Fabriek", 75000, 8000, 1.2, FabriekBtn, FabriekCountDisplay);
 const temple = new AutoClicker("Temple", 100000, 10000, 1.2, templeBtn, templeCountDisplay);
 const corporation = new AutoClicker("Corporation", 500000, 50000, 1.2, corporateBtn, corporateCountDisplay);
 
-
-
-
 // ------------------ Core Functions ------------------
 function updateCount() {
-    countDiv.textContent = Math.ceil(count) + " cookies";
+    if (countDiv) countDiv.textContent = Math.ceil(count) + " cookies";
 }
 
 function updateCPS() {
     const cookiesPerTick = autoClickerCount * multiplier * autoOutputMultiplier;
-    const cps = (cookiesPerTick / (currentInterval / 1000));
-    cpsDiv.textContent = "per second: " + Math.ceil(cps);
-    if (currentCPSDisplay) {
-        currentCPSDisplay.textContent = Math.ceil(cps);
-    }
+    const cps = currentInterval ? (cookiesPerTick / (currentInterval / 1000)) : 0;
+    if (cpsDiv) cpsDiv.textContent = "per second: " + Math.max(0, Math.round(cps));
+    if (currentCPSDisplay) currentCPSDisplay.textContent = Math.max(0, Math.round(cps));
 }
 
 function updateStats() {
-    totalCookiesDisplay.textContent = Math.ceil(count);
-    totalClicksDisplay.textContent = totalClicks;
-    cookiesSpentDisplay.textContent = Math.ceil(cookiesSpent);
-    allTimeCookiesDisplay.textContent = Math.ceil(allTimeCookies);
+    if (totalCookiesDisplay) totalCookiesDisplay.textContent = Math.ceil(count);
+    if (totalClicksDisplay) totalClicksDisplay.textContent = totalClicks;
+    if (cookiesSpentDisplay) cookiesSpentDisplay.textContent = Math.ceil(cookiesSpent);
+    if (allTimeCookiesDisplay) allTimeCookiesDisplay.textContent = Math.ceil(allTimeCookies);
+
     grandma.updateDisplay();
     supplier.updateDisplay();
     chef.updateDisplay();
-    bank.updateDisplay();
     bakkerij.updateDisplay();
+    bank.updateDisplay();
+    Fabriek.updateDisplay();
+    temple.updateDisplay();
+    corporation.updateDisplay();
+
     updateBoostButton();
-    updateEnhancements();
+    renderEnhancements();
 }
 
 function startAutoProduction() {
@@ -150,165 +159,176 @@ function startAutoProduction() {
     startGrandmaBonusTimer();
 }
 
+// ------------------ Cookie button ------------------
+if (btn) {
+    btn.addEventListener('click', function () {
+        count += multiplier;
+        totalClicks++;
+        allTimeCookies += multiplier;
+        updateCount();
+        updateStats();
+        btn.classList.add('clicked');
+        setTimeout(() => btn.classList.remove('clicked'), 200);
+    });
+}
 
-// cookie button
-btn.addEventListener('click', function() {
-    count += multiplier;
-    totalClicks++;
-    allTimeCookies += multiplier;
-    updateCount();
-    updateStats();
-    btn.classList.add('clicked');
-    setTimeout(() => btn.classList.remove('clicked'), 200);
-});
-// grandma bonus
+// ------------------ Grandma random bonus ------------------
 let grandmaBonusTimer = null;
-
-// Tweak these to balance
-const GRANDMA_BONUS_INTERVAL_MS = 1000; // check every second
-const GRANDMA_BONUS_CHANCE      = 0.02; // 20% chance per tick
-const GRANDMA_BONUS_AMOUNT      = 25;   // per grandma when it hits
+const GRANDMA_BONUS_INTERVAL_MS = 1000;
+const GRANDMA_BONUS_CHANCE = 0.2;
+const GRANDMA_BONUS_AMOUNT = 10;
 
 function startGrandmaBonusTimer() {
-    // Only start once, and only if player owns at least 1 grandma
     if (grandmaBonusTimer || grandma.count <= 0) return;
-
     grandmaBonusTimer = setInterval(() => {
-        if (grandma.count <= 0) return; // safety if ever reduced
+        if (grandma.count <= 0) return;
         if (Math.random() < GRANDMA_BONUS_CHANCE) {
             const bonus = GRANDMA_BONUS_AMOUNT * grandma.count;
             count += bonus;
             allTimeCookies += bonus;
-            // (Optional) tiny feedback:
-            // console.log(`🧓 Grandma bonus +${bonus}`);
-            updateCount();
-            updateCPS();
-            updateStats();
+            updateCount(); updateCPS(); updateStats();
         }
     }, GRANDMA_BONUS_INTERVAL_MS);
 }
 
-// chef boost
+// ------------------ Chef boost ------------------
 const chefBoostBtn = document.getElementById('chefBoostBtn');
 const chefBoostStatus = document.getElementById('chefBoostStatus');
 let chefBoostActive = false;
 let chefBoostCooldown = false;
 let chefBoostTimer = null;
 
-chefBoostBtn.addEventListener('click', () => {
-    if (!chefBoostActive && !chefBoostCooldown && chef.count > 0) {
-        chefBoostActive = true;
-        chefBoostBtn.disabled = true;
-        let timeLeft = chefBoostDuration / 1000;
-        chefBoostStatus.textContent = `🔥 Boost active: ${timeLeft}s`;
+// standaard uit tot er een chef is
+if (chefBoostBtn) chefBoostBtn.disabled = true;
 
-        chefBoostTimer = setInterval(() => {
-            timeLeft--;
-            chefBoostStatus.textContent = `🔥 Boost active: ${timeLeft}s`;
-        }, 1000);
+if (chefBoostBtn) {
+    chefBoostBtn.addEventListener('click', () => {
+        if (!chefBoostActive && !chefBoostCooldown && chef.count > 0) {
+            chefBoostActive = true;
+            chefBoostBtn.disabled = true;
 
-        currentInterval = Math.max(100, currentInterval * chefBoostFactor);
-        startAutoProduction();
+            let timeLeft = Math.ceil(chefBoostDuration / 1000);
+            if (chefBoostStatus) chefBoostStatus.textContent = `🔥 Boost active: ${timeLeft}s`;
 
-        setTimeout(() => {
-            clearInterval(chefBoostTimer);
-            chefBoostActive = false;
-            chefBoostCooldown = true;
-            currentInterval = baseInterval;
-            startAutoProduction();
-
-            let cooldownLeft = chefCooldownTime / 1000;
-            chefBoostStatus.textContent = `⏳ Cooldown: ${cooldownLeft}s`;
+            if (chefBoostTimer) clearInterval(chefBoostTimer);
             chefBoostTimer = setInterval(() => {
-                cooldownLeft--;
-                chefBoostStatus.textContent = `⏳ Cooldown: ${cooldownLeft}s`;
+                timeLeft--;
+                if (chefBoostStatus) chefBoostStatus.textContent = `🔥 Boost active: ${timeLeft}s`;
             }, 1000);
 
-            setTimeout(() => {
-                clearInterval(chefBoostTimer);
-                chefBoostCooldown = false;
-                chefBoostBtn.disabled = false;
-                chefBoostStatus.textContent = "Chef boost ready!";
-            }, chefCooldownTime);
+            // versnellen: verlaag interval maar nooit onder 100ms
+            currentInterval = Math.max(100, Math.floor(currentInterval * chefBoostFactor));
+            startAutoProduction();
 
-        }, chefBoostDuration);
-    }
-});
+            // einde boost -> cooldown
+            setTimeout(() => {
+                if (chefBoostTimer) clearInterval(chefBoostTimer);
+                chefBoostActive = false;
+                chefBoostCooldown = true;
+
+                currentInterval = baseInterval;
+                startAutoProduction();
+
+                let cooldownLeft = Math.ceil(chefCooldownTime / 1000);
+                if (chefBoostStatus) chefBoostStatus.textContent = `⏳ Cooldown: ${cooldownLeft}s`;
+                chefBoostTimer = setInterval(() => {
+                    cooldownLeft--;
+                    if (chefBoostStatus) chefBoostStatus.textContent = `⏳ Cooldown: ${cooldownLeft}s`;
+                }, 1000);
+
+                setTimeout(() => {
+                    if (chefBoostTimer) clearInterval(chefBoostTimer);
+                    chefBoostCooldown = false;
+                    if (chefBoostBtn) chefBoostBtn.disabled = false;
+                    if (chefBoostStatus) chefBoostStatus.textContent = "Chef boost ready!";
+                }, chefCooldownTime);
+
+            }, chefBoostDuration);
+        }
+    });
+}
 
 function updateBoostButton() {
+    if (!chefBoostBtn || !chefBoostStatus) return;
     if (chef.count > 0 && !chefBoostActive && !chefBoostCooldown) {
         chefBoostBtn.disabled = false;
         chefBoostStatus.textContent = "Chef boost ready!";
+    } else if (chef.count === 0) {
+        chefBoostBtn.disabled = true;
+        chefBoostStatus.textContent = "Buy a Pastry Chef to unlock boost.";
     }
 }
 
-// ------------------ Enhancements Progressive Unlock ------------------
-const enhBoostTimeBtn = document.getElementById('enhBoostTime');
-const enhCooldownBtn = document.getElementById('enhCooldown');
-const enhPowerBtn = document.getElementById('enhPower');
+// ------------------ Enhancements (ROBUUSTE RENDER) ------------------
+const enhBoostTimeBtn   = document.getElementById('enhBoostTime');   // verlengt boost
+const enhCooldownBtn    = document.getElementById('enhCooldown');    // kortere cooldown
+const enhPowerBtn       = document.getElementById('enhPower');       // snellere interval
+const UltraCooldownBtn  = document.getElementById('UltraCooldown');  // nog kortere cooldown
+const UltraTimeBtn      = document.getElementById('UltraTime');      // nog langere boost
 
-let enhBoostTimeCost = 10000;
-let enhCooldownCost = 25000;
-let enhPowerCost   = 50000;
+let enhBoostTimeCost   = 10000;
+let enhCooldownCost    = 25000;
+let enhPowerCost       = 50000;
+let UltraCooldownCost  = 100000;
+let UltraTimeCost      = 200000;
 
-// ------- Helpers: mark done + (optional) persistence -------
-function markDone(btn, key) {
-    if (!btn) return;
-    btn.dataset.done = "1";
-    btn.classList.add("hidden");
+// Flags ophalen uit localStorage
+function getEnhState() {
+    let s = {
+        boostTimeDone: false,
+        cooldownDone: false,
+        powerDone: false,
+        ultraCooldownDone: false,
+        ultraTimeDone: false
+    };
+    try {
+        s.boostTimeDone      = localStorage.getItem("enhBoostTimeDone")   === "1";
+        s.cooldownDone       = localStorage.getItem("enhCooldownDone")    === "1";
+        s.powerDone          = localStorage.getItem("enhPowerDone")       === "1";
+        s.ultraCooldownDone  = localStorage.getItem("UltraCooldownDone")  === "1";
+        s.ultraTimeDone      = localStorage.getItem("UltraTimeDone")      === "1";
+    } catch {}
+    return s;
+}
+
+function setEnhDone(key) {
     try { localStorage.setItem(key, "1"); } catch {}
 }
 
-function restoreDone(btn, key) {
-    try {
-        if (localStorage.getItem(key) === "1") {
-            btn?.classList.add("hidden");
-            if (btn) btn.dataset.done = "1";
-        }
-    } catch {}
-}
+function hide(el){ el && el.classList.add("hidden"); }
+function show(el){ el && el.classList.remove("hidden"); }
 
-// Restore completion state on load
-restoreDone(enhBoostTimeBtn,  "enhBoostTimeDone");
-restoreDone(enhCooldownBtn,   "enhCooldownDone");
-restoreDone(enhPowerBtn,      "enhPowerDone");
+function renderEnhancements() {
+    const state = getEnhState();
+    hide(enhBoostTimeBtn);
+    hide(enhCooldownBtn);
+    hide(enhPowerBtn);
+    hide(UltraCooldownBtn);
+    hide(UltraTimeBtn);
 
-// ------- Only show the first step when appropriate, never after all done -------
-function updateEnhancements() {
-    const done1 = enhBoostTimeBtn?.dataset.done === "1";
-    const done2 = enhCooldownBtn?.dataset.done === "1";
-    const done3 = enhPowerBtn?.dataset.done === "1";
+    if (chef.count <= 0) return;
 
-    // If everything is completed, never show anything again.
-    if (done1 && done2 && done3) return;
-
-    // Show the first button only when all are hidden, user has a chef,
-    // and the first one hasn't been completed yet.
-    if (
-        chef.count > 0 &&
-        enhBoostTimeBtn &&
-        enhBoostTimeBtn.classList.contains("hidden") &&
-        !done1 &&
-        (enhCooldownBtn?.classList.contains("hidden") ?? true) &&
-        (enhPowerBtn?.classList.contains("hidden") ?? true)
-    ) {
-        enhBoostTimeBtn.classList.remove("hidden");
+    if (!state.boostTimeDone) {
+        show(enhBoostTimeBtn);
+    } else if (!state.cooldownDone) {
+        show(enhCooldownBtn);
+    } else if (!state.powerDone) {
+        show(enhPowerBtn);
+    } else if (!state.ultraCooldownDone) {
+        show(UltraCooldownBtn);
+    } else if (!state.ultraTimeDone) {
+        show(UltraTimeBtn);
     }
 }
 
+// Enhancement acties
 enhBoostTimeBtn?.addEventListener('click', () => {
     if (count >= enhBoostTimeCost) {
         count -= enhBoostTimeCost;
         cookiesSpent += enhBoostTimeCost;
         chefBoostDuration += 15000;
-        updateCount();
-        updateStats();
-
-        // permanently hide BoostTime, reveal Cooldown
-        markDone(enhBoostTimeBtn, "enhBoostTimeDone");
-        enhCooldownBtn?.classList.remove("hidden");
-    } else if (enhBoostTimeBtn) {
-        // optional: UI feedback for insufficient cookies
+        setEnhDone("enhBoostTimeDone");
+        updateCount(); updateStats(); renderEnhancements();
     } else {
         alert("Not enough cookies!");
     }
@@ -319,12 +339,8 @@ enhCooldownBtn?.addEventListener('click', () => {
         count -= enhCooldownCost;
         cookiesSpent += enhCooldownCost;
         chefCooldownTime = Math.max(60000, chefCooldownTime - 60000);
-        updateCount();
-        updateStats();
-
-        // permanently hide Cooldown, reveal Power
-        markDone(enhCooldownBtn, "enhCooldownDone");
-        enhPowerBtn?.classList.remove("hidden");
+        setEnhDone("enhCooldownDone");
+        updateCount(); updateStats(); renderEnhancements();
     } else {
         alert("Not enough cookies!");
     }
@@ -335,19 +351,38 @@ enhPowerBtn?.addEventListener('click', () => {
         count -= enhPowerCost;
         cookiesSpent += enhPowerCost;
         chefBoostFactor = 0.2;
-        updateCount();
-        updateStats();
+        setEnhDone("enhPowerDone");
+        updateCount(); updateStats(); renderEnhancements();
+    } else {
+        alert("Not enough cookies!");
+    }
+});
 
-        // permanently hide Power; nothing else shows after this
-        markDone(enhPowerBtn, "enhPowerDone");
+UltraCooldownBtn?.addEventListener('click', () => {
+    if (count >= UltraCooldownCost) {
+        count -= UltraCooldownCost;
+        cookiesSpent += UltraCooldownCost;
+        chefCooldownTime = Math.max(120000, chefCooldownTime - 120000);
+        setEnhDone("UltraCooldownDone");
+        updateCount(); updateStats(); renderEnhancements();
+    } else {
+        alert("Not enough cookies!");
+    }
+});
+
+UltraTimeBtn?.addEventListener('click', () => {
+    if (count >= UltraTimeCost) {
+        count -= UltraTimeCost;
+        cookiesSpent += UltraTimeCost;
+        chefBoostDuration += 60000;
+        setEnhDone("UltraTimeDone");
+        updateCount(); updateStats(); renderEnhancements();
     } else {
         alert("Not enough cookies!");
     }
 });
 
 // ------------------ SAVE / LOAD SYSTEM ------------------
-
-// Welke data we willen bewaren
 function getSaveData() {
     return {
         count,
@@ -355,117 +390,88 @@ function getSaveData() {
         cookiesSpent,
         allTimeCookies,
         multiplier,
-        autoClickerCount,
         autoOutputMultiplier,
         baseInterval,
         currentInterval,
-        chefBoostDuration,
-        chefCooldownTime,
-        chefBoostFactor,
+
+        chefBoost: {
+            duration: chefBoostDuration,
+            cooldown: chefCooldownTime,
+            factor: chefBoostFactor
+        },
+
+        enhancements: getEnhState(),
+
         autoClickers: {
-            grandma: { count: grandma.count, cost: grandma.cost },
-            supplier: { count: supplier.count, cost: supplier.cost },
-            chef: { count: chef.count, cost: chef.cost },
-            bakkerij: { count: bakkerij.count, cost: bakkerij.cost },
-            bank: { count: bank.count, cost: bank.cost },
-            temple: { count: temple.count, cost: temple.cost }
+            grandma:     { count: grandma.count,     cost: grandma.cost },
+            supplier:    { count: supplier.count,    cost: supplier.cost },
+            chef:        { count: chef.count,        cost: chef.cost },
+            bakkerij:    { count: bakkerij.count,    cost: bakkerij.cost },
+            bank:        { count: bank.count,        cost: bank.cost },
+            Fabriek:     { count: Fabriek.count,     cost: Fabriek.cost },
+            temple:      { count: temple.count,      cost: temple.cost },
+            corporation: { count: corporation.count, cost: corporation.cost }
         }
     };
 }
 
-// Herstellen van opgeslagen data
 function loadSaveData(save) {
     if (!save) return;
 
-    // Basiswaarden herstellen
-    count = save.count || 0;
-    totalClicks = save.totalClicks || 0;
-    cookiesSpent = save.cookiesSpent || 0;
-    allTimeCookies = save.allTimeCookies || 0;
-    multiplier = save.multiplier || 1;
-    autoClickerCount = save.autoClickerCount || 0;
-    autoOutputMultiplier = save.autoOutputMultiplier || 1;
-    baseInterval = save.baseInterval || 1000;
-    currentInterval = save.currentInterval || baseInterval;
+    // basis
+    count = save.count ?? 0;
+    totalClicks = save.totalClicks ?? 0;
+    cookiesSpent = save.cookiesSpent ?? 0;
+    allTimeCookies = save.allTimeCookies ?? 0;
+    multiplier = save.multiplier ?? 1;
+    autoOutputMultiplier = save.autoOutputMultiplier ?? 1;
+    baseInterval = save.baseInterval ?? 1000;
+    currentInterval = save.currentInterval ?? baseInterval;
 
-    chefBoostDuration = save.chefBoostDuration || 15000;
-    chefCooldownTime = save.chefCooldownTime || 300000;
-    chefBoostFactor = save.chefBoostFactor || 0.5;
+    // boost settings
+    if (save.chefBoost) {
+        chefBoostDuration = save.chefBoost.duration ?? 15000;
+        chefCooldownTime  = save.chefBoost.cooldown ?? 300000;
+        chefBoostFactor   = save.chefBoost.factor ?? 0.5;
+    }
 
-    // AutoClickers herstellen
+    // autoclickers + herbereken autoClickerCount
+    autoClickerCount = 0;
+    const map = { grandma, supplier, chef, bakkerij, bank, Fabriek, temple, corporation };
     if (save.autoClickers) {
-        for (let key in save.autoClickers) {
-            const data = save.autoClickers[key];
-            if (window[key]) {
-                window[key].count = data.count || 0;
-                window[key].cost = data.cost || window[key].cost;
-                window[key].updateButton();
-                window[key].updateDisplay();
+        Object.entries(save.autoClickers).forEach(([key, data]) => {
+            const ac = map[key];
+            if (ac) {
+                ac.count = data.count || 0;
+                ac.cost  = data.cost  || ac.cost;
+                autoClickerCount += ac.effect * ac.count;
+                ac.updateButton();
+                ac.updateDisplay();
             }
-        }
+        });
     }
 
-    updateCount();
-    updateCPS();
-    updateStats();
-    startAutoProduction();
-}
-// ===============================
-// TOGGLE: OPTIONS & STATS
-// ===============================
-const optionsToggleBtn = document.getElementById("optionsToggleBtn");
-const optionsWindow = document.getElementById("optionsWindow");
-
-const statsToggleBtn = document.getElementById("statsToggleBtn");
-const statsWindow = document.getElementById("statsWindow");
-
-// ---- OPTIONS ----
-if (optionsToggleBtn && optionsWindow) {
-    optionsToggleBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const willShow = optionsWindow.classList.contains("hidden");
-        optionsWindow.classList.toggle("hidden");
-        optionsToggleBtn.setAttribute("aria-expanded", willShow ? "true" : "false");
-    });
-}
-
-// ---- STATS ----
-if (statsToggleBtn && statsWindow) {
-    statsToggleBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const willShow = statsWindow.classList.contains("hidden");
-        statsWindow.classList.toggle("hidden");
-        statsToggleBtn.textContent = willShow ? "Hide Stats" : "Show Stats";
-        statsToggleBtn.setAttribute("aria-expanded", willShow ? "true" : "false");
-    });
-}
-
-// ---- Klik buiten om te sluiten ----
-document.addEventListener("click", (e) => {
-    // OPTIONS sluiten
-    if (
-        optionsWindow &&
-        !optionsWindow.classList.contains("hidden") &&
-        !optionsWindow.contains(e.target) &&
-        e.target !== optionsToggleBtn
-    ) {
-        optionsWindow.classList.add("hidden");
-        optionsToggleBtn.setAttribute("aria-expanded", "false");
+    // enhancements state -> terug in localStorage (voor de renderer)
+    if (save.enhancements) {
+        const {
+            boostTimeDone,
+            cooldownDone,
+            powerDone,
+            ultraCooldownDone,
+            ultraTimeDone
+        } = save.enhancements;
+        try {
+            localStorage.setItem("enhBoostTimeDone",   boostTimeDone     ? "1" : "0");
+            localStorage.setItem("enhCooldownDone",    cooldownDone      ? "1" : "0");
+            localStorage.setItem("enhPowerDone",       powerDone         ? "1" : "0");
+            localStorage.setItem("UltraCooldownDone",  ultraCooldownDone ? "1" : "0");
+            localStorage.setItem("UltraTimeDone",      ultraTimeDone     ? "1" : "0");
+        } catch {}
     }
 
-    // STATS sluiten
-    if (
-        statsWindow &&
-        !statsWindow.classList.contains("hidden") &&
-        !statsWindow.contains(e.target) &&
-        e.target !== statsToggleBtn
-    ) {
-        statsWindow.classList.add("hidden");
-        statsToggleBtn.textContent = "Show Stats";
-        statsToggleBtn.setAttribute("aria-expanded", "false");
-    }
-});
-
+    updateCount(); updateCPS(); updateStats(); startAutoProduction();
+    renderEnhancements();
+}
 
 // Opslaan in localStorage
 function saveGame() {
@@ -476,13 +482,16 @@ function saveGame() {
 
 // Laden uit localStorage
 function loadGame() {
-    const data = JSON.parse(localStorage.getItem("cookieGameSave"));
-    if (data) {
-        loadSaveData(data);
-        console.log("🎮 Game loaded!");
-    } else {
+    const raw = localStorage.getItem("cookieGameSave");
+    if (!raw) {
         console.log("No save found.");
+        updateCount(); updateCPS(); updateStats(); startAutoProduction();
+        renderEnhancements();
+        return;
     }
+    const data = JSON.parse(raw);
+    loadSaveData(data);
+    console.log("🎮 Game loaded!");
 }
 
 // Automatisch opslaan elke 30 seconden
@@ -491,59 +500,111 @@ setInterval(saveGame, 30000);
 // Game automatisch laden bij het opstarten
 window.addEventListener('load', () => {
     loadGame();
+    renderEnhancements();
 });
 
-// Optioneel: handmatige save/load knoppen (voeg toe in je HTML)
+// ------------------ OPTIONS & STATS TOGGLES ------------------
+const optionsToggleBtn = document.getElementById("optionsToggleBtn");
+const optionsWindow = document.getElementById("optionsWindow");
+const statsToggleBtn = document.getElementById("statsToggleBtn");
+const statsWindow = document.getElementById("statsWindow");
+
+// OPTIONS
+if (optionsToggleBtn && optionsWindow) {
+    optionsToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const willShow = optionsWindow.classList.contains("hidden");
+        optionsWindow.classList.toggle("hidden");
+        optionsToggleBtn.setAttribute("aria-expanded", willShow ? "true" : "false");
+    });
+}
+
+// STATS
+if (statsToggleBtn && statsWindow) {
+    statsToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const willShow = statsWindow.classList.contains("hidden");
+        statsWindow.classList.toggle("hidden");
+        statsToggleBtn.textContent = willShow ? "Hide Stats" : "Show Stats";
+        statsToggleBtn.setAttribute("aria-expanded", willShow ? "true" : "false");
+    });
+}
+
+// Klik buiten om te sluiten
+document.addEventListener("click", (e) => {
+    if (optionsWindow &&
+        !optionsWindow.classList.contains("hidden") &&
+        !optionsWindow.contains(e.target) &&
+        e.target !== optionsToggleBtn) {
+        optionsWindow.classList.add("hidden");
+        optionsToggleBtn?.setAttribute("aria-expanded", "false");
+    }
+
+    if (statsWindow &&
+        !statsWindow.classList.contains("hidden") &&
+        !statsWindow.contains(e.target) &&
+        e.target !== statsToggleBtn) {
+        statsWindow.classList.add("hidden");
+        if (statsToggleBtn) {
+            statsToggleBtn.textContent = "Show Stats";
+            statsToggleBtn.setAttribute("aria-expanded", "false");
+        }
+    }
+});
+
+// ------------------ Manual save/load buttons ------------------
 const manualSaveBtn = document.getElementById('saveGameBtn');
 const manualLoadBtn = document.getElementById('loadGameBtn');
 if (manualSaveBtn) manualSaveBtn.addEventListener('click', saveGame);
 if (manualLoadBtn) manualLoadBtn.addEventListener('click', loadGame);
+
 // ------------------ RESET GAME ------------------
 function resetGame() {
-    if (confirm("Weet je zeker dat je al je voortgang wilt wissen?")) {
-        localStorage.removeItem("cookieGameSave"); // verwijdert opgeslagen data
+    if (!confirm("Weet je zeker dat je al je voortgang wilt wissen?")) return;
 
-        // Alles terugzetten naar beginwaarden
-        count = 0;
-        totalClicks = 0;
-        cookiesSpent = 0;
-        allTimeCookies = 0;
-        multiplier = 1;
-        autoClickerCount = 0;
-        autoOutputMultiplier = 1;
-        currentInterval = baseInterval;
+    localStorage.removeItem("cookieGameSave");
+    try {
+        localStorage.removeItem("enhBoostTimeDone");
+        localStorage.removeItem("enhCooldownDone");
+        localStorage.removeItem("enhPowerDone");
+        localStorage.removeItem("UltraCooldownDone");
+        localStorage.removeItem("UltraTimeDone");
+    } catch {}
 
-        // Reset boosts en upgrades
-        chefBoostDuration = 15000;
-        chefCooldownTime = 300000;
-        chefBoostFactor = 0.5;
+    // timers stoppen
+    if (autoProductionInterval) clearInterval(autoProductionInterval);
+    if (grandmaBonusTimer) { clearInterval(grandmaBonusTimer); grandmaBonusTimer = null; }
+    if (chefBoostTimer) clearInterval(chefBoostTimer);
 
-        // Reset alle autoclickers
-        [grandma, supplier, chef, bakkerij, bank, temple].forEach(ac => {
-            ac.count = 0;
-            ac.cost = Math.ceil(ac.cost / Math.pow(ac.costGrowth, ac.count)); // terug naar originele cost
-            ac.updateButton();
-            ac.updateDisplay();
-        });
+    // baseline
+    count = 0; totalClicks = 0; cookiesSpent = 0; allTimeCookies = 0;
+    multiplier = 1; autoClickerCount = 0; autoOutputMultiplier = 1;
+    currentInterval = baseInterval;
 
-        // UI bijwerken
-        updateCount();
-        updateCPS();
-        updateStats();
+    // boosts terugzetten
+    chefBoostDuration = 15000;
+    chefCooldownTime = 300000;
+    chefBoostFactor = 0.5;
+    chefBoostActive = false;
+    chefBoostCooldown = false;
+    if (chefBoostBtn) chefBoostBtn.disabled = true;
+    if (chefBoostStatus) chefBoostStatus.textContent = "Chef boost ready!";
 
-        // Auto-production stoppen
-        if (autoProductionInterval) clearInterval(autoProductionInterval);
+    // alle autoclickers resetten
+    [grandma, supplier, chef, bakkerij, bank, Fabriek, temple, corporation].forEach(ac => ac.reset());
 
-        alert("Alle voortgang is gewist. Het spel is opnieuw gestart!");
-    }
+    updateCount(); updateCPS(); updateStats();
+    renderEnhancements();
+
+    alert("Alle voortgang is gewist. Het spel is opnieuw gestart!");
 }
 
-// Koppel knop
 const resetGameBtn = document.getElementById('resetGameBtn');
 if (resetGameBtn) resetGameBtn.addEventListener('click', resetGame);
 
-
+// ------------------ Initial kick ------------------
 updateCount();
 updateCPS();
 updateStats();
 startAutoProduction();
+renderEnhancements();
