@@ -1,5 +1,5 @@
 // ------------------ Global game state ------------------
-let count = 1500000;
+let count = 550;
 let totalClicks = 0;
 let cookiesSpent = 0;
 let allTimeCookies = 0;
@@ -18,8 +18,8 @@ let chefCooldownTime  = 300000;      // ms
 let chefBoostFactor   = 0.5;         // interval multiplier tijdens boost (lager = sneller)
 
 // ------------------ Grandma bonus settings ------------------
-let grandmaBonusChance = 0.2;        // kans per tick (voorheen const)
-let grandmaBonusAmount = 10;         // bonus per grandma
+let grandmaBonusChance = 0.1;        // kans per tick (voorheen const)
+let grandmaBonusAmount = 20;         // bonus per grandma
 
 // ------------------ DOM refs ------------------
 const btn = document.getElementById('cookieBtn');
@@ -109,13 +109,13 @@ class AutoClicker {
 
 // ------------------ Instances ------------------
 const grandma = new AutoClicker("Grandma", 100, 2, 1.1, shopBtn, grandmaCountDisplay);
-const supplier = new AutoClicker("Supplier", 500, 15, 1.1, supplierBtn, supplierCountDisplay);
-const chef = new AutoClicker("Pastry Chef", 1500, 250, 1.2, chefBtn, chefCountDisplay);
-const bakkerij = new AutoClicker("Bakkerij", 10000, 2000, 1.3, bakkerijBtn, bakkerijCountDisplay);
-const bank = new AutoClicker("Bank", 25000, 5000, 1.3, bankBtn, bankCountDisplay);
-const Fabriek = new AutoClicker("Fabriek", 75000, 8000, 1.2, FabriekBtn, FabriekCountDisplay);
-const temple = new AutoClicker("Temple", 100000, 10000, 1.2, templeBtn, templeCountDisplay);
-const corporation = new AutoClicker("Corporation", 500000, 50000, 1.2, corporateBtn, corporateCountDisplay);
+const supplier = new AutoClicker("Supplier", 3000, 25, 1.1, supplierBtn, supplierCountDisplay);
+const chef = new AutoClicker("Pastry Chef", 35000, 250, 1.2, chefBtn, chefCountDisplay);
+const bakkerij = new AutoClicker("Bakkerij", 150000, 3500, 1.3, bakkerijBtn, bakkerijCountDisplay);
+const bank = new AutoClicker("Bank", 500000, 5000, 1.3, bankBtn, bankCountDisplay);
+const Fabriek = new AutoClicker("Fabriek", 850000, 8000, 1.2, FabriekBtn, FabriekCountDisplay);
+const temple = new AutoClicker("Temple", 1200000, 10000, 1.2, templeBtn, templeCountDisplay);
+const corporation = new AutoClicker("Corporation", 5000000, 50000, 1.2, corporateBtn, corporateCountDisplay);
 
 // ------------------ Core Functions ------------------
 function updateCount() {
@@ -272,8 +272,8 @@ const UltraTimeBtn      = document.getElementById('UltraTime');      // Chef: no
 const grannyMoreCookiesBtn = document.getElementById('grannyMoreCookies'); // meer bonus-koekjes
 const grannyMoreChanceBtn  = document.getElementById('grannyMoreChance');  // hogere kans
 
-let grannyMoreCookiesCost = 150;
-let grannyMoreChanceCost  = 300;
+let grannyMoreCookiesCost = 500;
+let grannyMoreChanceCost  = 750;
 let enhBoostTimeCost      = 10000;
 let enhCooldownCost       = 25000;
 let enhPowerCost          = 50000;
@@ -435,8 +435,7 @@ grannyMoreChanceBtn?.addEventListener('click', () => {
     if (count >= grannyMoreChanceCost) {
         count -= grannyMoreChanceCost;
         cookiesSpent += grannyMoreChanceCost;
-        // Oma's krijgen hogere kans
-        grandmaBonusChance = Math.min(0.8, grandmaBonusChance + 0.2);
+        grandmaBonusChance = Math.min(0.8, grandmaBonusChance + 0.3);
         setEnhDone("grannyMoreChanceDone");
         updateCount(); updateStats(); renderEnhancements();
     } else {
