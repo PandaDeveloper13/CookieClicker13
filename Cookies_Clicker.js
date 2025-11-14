@@ -17,6 +17,10 @@ let chefBoostDuration = 15000;       // ms
 let chefCooldownTime  = 300000;      // ms
 let chefBoostFactor   = 0.5;         // interval multiplier tijdens boost (lager = sneller)
 
+// ------------------ Grandma bonus settings ------------------
+let grandmaBonusChance = 0.2;        // kans per tick (voorheen const)
+let grandmaBonusAmount = 10;         // bonus per grandma
+
 // ------------------ DOM refs ------------------
 const btn = document.getElementById('cookieBtn');
 const countDiv = document.getElementById('count');
@@ -175,15 +179,13 @@ if (btn) {
 // ------------------ Grandma random bonus ------------------
 let grandmaBonusTimer = null;
 const GRANDMA_BONUS_INTERVAL_MS = 1000;
-const GRANDMA_BONUS_CHANCE = 0.2;
-const GRANDMA_BONUS_AMOUNT = 10;
 
 function startGrandmaBonusTimer() {
     if (grandmaBonusTimer || grandma.count <= 0) return;
     grandmaBonusTimer = setInterval(() => {
         if (grandma.count <= 0) return;
-        if (Math.random() < GRANDMA_BONUS_CHANCE) {
-            const bonus = GRANDMA_BONUS_AMOUNT * grandma.count;
+        if (Math.random() < grandmaBonusChance) {
+            const bonus = grandmaBonusAmount * grandma.count;
             count += bonus;
             allTimeCookies += bonus;
             updateCount(); updateCPS(); updateStats();
@@ -260,33 +262,44 @@ function updateBoostButton() {
 }
 
 // ------------------ Enhancements (ROBUUSTE RENDER) ------------------
-const enhBoostTimeBtn   = document.getElementById('enhBoostTime');   // verlengt boost
-const enhCooldownBtn    = document.getElementById('enhCooldown');    // kortere cooldown
-const enhPowerBtn       = document.getElementById('enhPower');       // snellere interval
-const UltraCooldownBtn  = document.getElementById('UltraCooldown');  // nog kortere cooldown
-const UltraTimeBtn      = document.getElementById('UltraTime');      // nog langere boost
+const enhBoostTimeBtn   = document.getElementById('enhBoostTime');   // Chef: verlengt boost
+const enhCooldownBtn    = document.getElementById('enhCooldown');    // Chef: kortere cooldown
+const enhPowerBtn       = document.getElementById('enhPower');       // Chef: snellere interval
+const UltraCooldownBtn  = document.getElementById('UltraCooldown');  // Chef: nog kortere cooldown
+const UltraTimeBtn      = document.getElementById('UltraTime');      // Chef: nog langere boost
 
-let enhBoostTimeCost   = 10000;
-let enhCooldownCost    = 25000;
-let enhPowerCost       = 50000;
-let UltraCooldownCost  = 100000;
-let UltraTimeCost      = 200000;
+// Grandma enhancement buttons
+const grannyMoreCookiesBtn = document.getElementById('grannyMoreCookies'); // meer bonus-koekjes
+const grannyMoreChanceBtn  = document.getElementById('grannyMoreChance');  // hogere kans
 
-// Flags ophalen uit localStorage
+let grannyMoreCookiesCost = 150;
+let grannyMoreChanceCost  = 300;
+let enhBoostTimeCost      = 10000;
+let enhCooldownCost       = 25000;
+let enhPowerCost          = 50000;
+let UltraCooldownCost     = 100000;
+let UltraTimeCost         = 200000;
+
+
+// ---- State ophalen uit localStorage ----
 function getEnhState() {
     let s = {
         boostTimeDone: false,
         cooldownDone: false,
         powerDone: false,
         ultraCooldownDone: false,
-        ultraTimeDone: false
+        ultraTimeDone: false,
+        grannyMoreCookiesDone: false,
+        grannyMoreChanceDone: false
     };
     try {
-        s.boostTimeDone      = localStorage.getItem("enhBoostTimeDone")   === "1";
-        s.cooldownDone       = localStorage.getItem("enhCooldownDone")    === "1";
-        s.powerDone          = localStorage.getItem("enhPowerDone")       === "1";
-        s.ultraCooldownDone  = localStorage.getItem("UltraCooldownDone")  === "1";
-        s.ultraTimeDone      = localStorage.getItem("UltraTimeDone")      === "1";
+        s.boostTimeDone         = localStorage.getItem("enhBoostTimeDone")      === "1";
+        s.cooldownDone          = localStorage.getItem("enhCooldownDone")       === "1";
+        s.powerDone             = localStorage.getItem("enhPowerDone")          === "1";
+        s.ultraCooldownDone     = localStorage.getItem("UltraCooldownDone")     === "1";
+        s.ultraTimeDone         = localStorage.getItem("UltraTimeDone")         === "1";
+        s.grannyMoreCookiesDone = localStorage.getItem("grannyMoreCookiesDone") === "1";
+        s.grannyMoreChanceDone  = localStorage.getItem("grannyMoreChanceDone")  === "1";
     } catch {}
     return s;
 }
@@ -298,14 +311,26 @@ function setEnhDone(key) {
 function hide(el){ el && el.classList.add("hidden"); }
 function show(el){ el && el.classList.remove("hidden"); }
 
+// ---- Nieuwe render: Chef & Grandma gescheiden ----
 function renderEnhancements() {
     const state = getEnhState();
+
+    // Alles eerst verbergen
     hide(enhBoostTimeBtn);
     hide(enhCooldownBtn);
     hide(enhPowerBtn);
     hide(UltraCooldownBtn);
     hide(UltraTimeBtn);
+    hide(grannyMoreCookiesBtn);
+    hide(grannyMoreChanceBtn);
 
+    // Daarna per boom renderen, onafhankelijk van elkaar
+    renderChefEnhancements(state);
+    renderGrandmaEnhancements(state);
+}
+
+// Alleen Chef-upgrades
+function renderChefEnhancements(state) {
     if (chef.count <= 0) return;
 
     if (!state.boostTimeDone) {
@@ -321,7 +346,18 @@ function renderEnhancements() {
     }
 }
 
-// Enhancement acties
+// Alleen Grandma-upgrades
+function renderGrandmaEnhancements(state) {
+    if (grandma.count <= 0) return;
+
+    if (!state.grannyMoreCookiesDone) {
+        show(grannyMoreCookiesBtn);
+    } else if (!state.grannyMoreChanceDone) {
+        show(grannyMoreChanceBtn);
+    }
+}
+
+// ---- Chef enhancement acties ----
 enhBoostTimeBtn?.addEventListener('click', () => {
     if (count >= enhBoostTimeCost) {
         count -= enhBoostTimeCost;
@@ -382,6 +418,33 @@ UltraTimeBtn?.addEventListener('click', () => {
     }
 });
 
+// ---- Grandma enhancement acties ----
+grannyMoreCookiesBtn?.addEventListener('click', () => {
+    if (count >= grannyMoreCookiesCost) {
+        count -= grannyMoreCookiesCost;
+        cookiesSpent += grannyMoreCookiesCost;
+        grandmaBonusAmount += 20; //
+        setEnhDone("grannyMoreCookiesDone");
+        updateCount(); updateStats(); renderEnhancements();
+    } else {
+        alert("Not enough cookies!");
+    }
+});
+
+grannyMoreChanceBtn?.addEventListener('click', () => {
+    if (count >= grannyMoreChanceCost) {
+        count -= grannyMoreChanceCost;
+        cookiesSpent += grannyMoreChanceCost;
+        // Oma's krijgen hogere kans
+        grandmaBonusChance = Math.min(0.8, grandmaBonusChance + 0.2);
+        setEnhDone("grannyMoreChanceDone");
+        updateCount(); updateStats(); renderEnhancements();
+    } else {
+        alert("Not enough cookies!");
+    }
+});
+
+
 // ------------------ SAVE / LOAD SYSTEM ------------------
 function getSaveData() {
     return {
@@ -398,6 +461,11 @@ function getSaveData() {
             duration: chefBoostDuration,
             cooldown: chefCooldownTime,
             factor: chefBoostFactor
+        },
+
+        grandmaBonus: {
+            chance: grandmaBonusChance,
+            amount: grandmaBonusAmount
         },
 
         enhancements: getEnhState(),
@@ -435,6 +503,12 @@ function loadSaveData(save) {
         chefBoostFactor   = save.chefBoost.factor ?? 0.5;
     }
 
+    // grandma bonus settings
+    if (save.grandmaBonus) {
+        grandmaBonusChance = save.grandmaBonus.chance ?? 0.2;
+        grandmaBonusAmount = save.grandmaBonus.amount ?? 10;
+    }
+
     // autoclickers + herbereken autoClickerCount
     autoClickerCount = 0;
     const map = { grandma, supplier, chef, bakkerij, bank, Fabriek, temple, corporation };
@@ -458,14 +532,18 @@ function loadSaveData(save) {
             cooldownDone,
             powerDone,
             ultraCooldownDone,
-            ultraTimeDone
+            ultraTimeDone,
+            grannyMoreCookiesDone,
+            grannyMoreChanceDone
         } = save.enhancements;
         try {
-            localStorage.setItem("enhBoostTimeDone",   boostTimeDone     ? "1" : "0");
-            localStorage.setItem("enhCooldownDone",    cooldownDone      ? "1" : "0");
-            localStorage.setItem("enhPowerDone",       powerDone         ? "1" : "0");
-            localStorage.setItem("UltraCooldownDone",  ultraCooldownDone ? "1" : "0");
-            localStorage.setItem("UltraTimeDone",      ultraTimeDone     ? "1" : "0");
+            localStorage.setItem("enhBoostTimeDone",      boostTimeDone         ? "1" : "0");
+            localStorage.setItem("enhCooldownDone",       cooldownDone          ? "1" : "0");
+            localStorage.setItem("enhPowerDone",          powerDone             ? "1" : "0");
+            localStorage.setItem("UltraCooldownDone",     ultraCooldownDone     ? "1" : "0");
+            localStorage.setItem("UltraTimeDone",         ultraTimeDone         ? "1" : "0");
+            localStorage.setItem("grannyMoreCookiesDone", grannyMoreCookiesDone ? "1" : "0");
+            localStorage.setItem("grannyMoreChanceDone",  grannyMoreChanceDone  ? "1" : "0");
         } catch {}
     }
 
@@ -569,6 +647,8 @@ function resetGame() {
         localStorage.removeItem("enhPowerDone");
         localStorage.removeItem("UltraCooldownDone");
         localStorage.removeItem("UltraTimeDone");
+        localStorage.removeItem("grannyMoreCookiesDone");
+        localStorage.removeItem("grannyMoreChanceDone");
     } catch {}
 
     // timers stoppen
@@ -585,6 +665,9 @@ function resetGame() {
     chefBoostDuration = 15000;
     chefCooldownTime = 300000;
     chefBoostFactor = 0.5;
+    grandmaBonusChance = 0.2;
+    grandmaBonusAmount = 10;
+
     chefBoostActive = false;
     chefBoostCooldown = false;
     if (chefBoostBtn) chefBoostBtn.disabled = true;
