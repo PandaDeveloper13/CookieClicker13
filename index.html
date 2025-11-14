@@ -3,167 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <title>Cookie Clicker</title>
-    <script src="Cookies_Clicker.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="Cookies_Clicker.css">
+    <script src="Cookies_Clicker.js" defer></script>
 </head>
-<body>
-
-<div class="top-bar">
-    <button id="optionsToggleBtn" class="options-toggle-btn" aria-controls="optionsWindow" aria-expanded="false">Options</button>
-    <input type="text" id="playerName" placeholder="Enter your bakery name">
-    <button id="statsToggleBtn" class="stats-toggle-btn" aria-controls="statsWindow" aria-expanded="false">Show Stats</button>
-</div>
-
-<div class="cookie-center-wrapper">
-    <div class="cookie-area">
-        <div id="count">0 cookies</div>
-        <div id="cps">per second: 0</div>
-        <img src="cookie.png" alt="Cookie" width="250" id="cookieBtn">
+<body class="game-body">
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-center align-items-center gap-3 mb-4 top-bar">
+        <button id="optionsToggleBtn"
+                class="btn btn-outline-light btn-sm px-4 rounded-pill options-toggle-btn"
+                aria-controls="optionsWindow"
+                aria-expanded="false">
+            Options
+        </button>
+        <input type="text"
+               id="playerName"
+               class="form-control bakery-input"
+               placeholder="Enter your bakery name">
+        <button id="statsToggleBtn"
+                class="btn btn-outline-light btn-sm px-4 rounded-pill stats-toggle-btn"
+                aria-controls="statsWindow"
+                aria-expanded="false">
+            Show Stats
+        </button>
     </div>
-
-    <div class="side-buttons-wrapper">
-        <!-- Store -->
-        <div class="side-buttons">
-            <h3>🛒 Store</h3>
-            <button id="multiplierBtn">CPS<br><small>Increases your clicking power<br>Cost: 50 cookies</small></button>
-            <button id="shopBtn">Grandma<br><small>Produces cookies automatically<br>Cost: 250 cookies</small></button>
-            <button id="supplierBtn">Supplier<br><small>Increases cookie production<br>Cost: 2000 cookies</small></button>
-            <button id="chefBtn">Pastry Chef<br><small>Speeds up all production<br>Cost: 5000 cookies</small></button>
-            <button id="bakkerijbtn">Bakkerij<br><small>Bakkerij om meer te koken<br>Cost: 1000 cookies</small></button>
-            <button id="bankBtn">Bank<br><small>Produces cookies over time<br>Cost: 20000 cookies</small></button>
-            <button id="FabriekBtn">Bank<br><small>Produces cookies over time<br>Cost: 75000 cookies</small></button>
-            <button id="templeBtn">Temple<br><small>Produces even more cookies<br>Cost: 100000 cookies</small></button>
-            <button id="corporateBtn">Bank<br><small>Produces cookies over time<br>Cost: 1000000 cookies</small></button>
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-4 d-flex flex-column align-items-center cookie-area text-center">
+            <div id="count" class="display-4 fw-light mb-1">0 cookies</div>
+            <div id="cps" class="text-light-50 mb-4">per second: 0</div>
+            <button class="border-0 bg-transparent p-0">
+                <img src="cookie.png"
+                     alt="Cookie"
+                     width="260"
+                     id="cookieBtn"
+                     class="img-fluid rounded-circle shadow cookie-img">
+            </button>
         </div>
-
-    </div>
-<!-- 🔹 Small Top Controls Row -->
-<div class="top-controls">
-    <div class="boost-section">
-        <h4>Boosts</h4>
-        <button id="chefBoostBtn" disabled>Activate Chef Boost</button>
-        <div id="chefBoostStatus">No boost active</div>
-    </div>
-
-    <div class="enhancements-section">
-        <h4>Enhancements</h4>
-        <div class="enhancements">
-            <button id="grannyMoreCookies">
-                More Cookies<br><small>More cookies when lucky</small><br><small>Cost: 500 cookies</small>
-            </button>
-            <button id="grannyMoreChance">
-                Lucky boost<br><small>Higher chance</small><br><small>Cost: 1000 Cookies</small>
-            </button>
-            <button id="supplierDropBoost" class="hidden">
-                Bigger Supplier Drops<br><small>Cost: 1000 cookies</small>
-            </button>
-            <button id="supplierDropFaster" class="hidden">
-                Faster Supplier Drops<br><small>Cost: 2000 cookies</small>
-            </button>
-
-            <button id="supplierDropFreq" class="hidden">
-                Supplier Upgrade: Faster Drops
-            </button>
-
-            <button id="supplierDropAmount" class="hidden">
-                Supplier Upgrade: Bigger Drops
-            </button>
-            <button id="enhBoostTime" class="hidden">
-                +15s Duration<br><small>Cost: 10000 cookies</small>
-            </button>
-            <button id="enhCooldown" class="hidden">
-                -60s Cooldown<br><small>Cost: 25000 cookies</small>
-            </button>
-            <button id="enhPower" class="hidden">
-                Stronger Boost<br><small>Cost: 50000 cookies</small>
-            </button>
-            <button id="enhUltraCooldown" class="hidden">
-                UltraCooldown<br><small>120s cooldown</small><br><small>Cost: 100000 cookies</small>
-            </button>
-            <button id ="enhUltraTime" class="hidden">
-                UltraTime<br>+ 60s<br><small>Cost: 200000 cookies</small>
-            </button>
-            <button id="bakeryChefBoost" class="hidden">
-                Bakkers synergy<br><small>Cost: 50000 cookies</small>
-            </button>
-
-
+        <div class="col-lg-4 side-buttons-wrapper">
+            <div class="card game-card side-buttons h-100">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">🛒 Store</h3>
+                </div>
+                <div class="card-body d-grid gap-2 small">
+                    <button id="multiplierBtn" class="btn btn-primary text-start store-btn">
+                        CPS
+                        <small>Increases your clicking power<br>Cost: 50 cookies</small>
+                    </button>
+                    <button id="shopBtn" class="btn btn-outline-primary text-start store-btn">
+                        Grandma
+                        <small>Produces cookies automatically<br>Cost: 250 cookies</small>
+                    </button>
+                    <button id="supplierBtn" class="btn btn-outline-success text-start store-btn">
+                        Supplier
+                        <small>Increases cookie production<br>Cost: 2000 cookies</small>
+                    </button>
+                    <button id="chefBtn" class="btn btn-outline-warning text-start store-btn">
+                        Pastry Chef
+                        <small>Speeds up all production<br>Cost: 5000 cookies</small>
+                    </button>
+                    <button id="bakkerijbtn" class="btn btn-outline-info text-start store-btn">
+                        Bakkerij
+                        <small>Bakkerij om meer te koken<br>Cost: 1000 cookies</small>
+                    </button>
+                    <button id="bankBtn" class="btn btn-outline-danger text-start store-btn">
+                        Bank
+                        <small>Produces cookies over time<br>Cost: 20000 cookies</small>
+                    </button>
+                    <button id="FabriekBtn" class="btn btn-outline-secondary text-start store-btn">
+                        Fabriek
+                        <small>Produces cookies over time<br>Cost: 75000 cookies</small>
+                    </button>
+                    <button id="templeBtn" class="btn btn-outline-dark text-start store-btn">
+                        Temple
+                        <small>Produces even more cookies<br>Cost: 100000 cookies</small>
+                    </button>
+                    <button id="corporateBtn" class="btn btn-outline-primary text-start store-btn">
+                        Corporation
+                        <small>Produces cookies over time<br>Cost: 1000000 cookies</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 top-controls d-flex flex-column gap-3 align-items-stretch">
+            <div class="card game-card boost-section">
+                <div class="card-header">
+                    <h4 class="h6 mb-0">Boosts</h4>
+                </div>
+                <div class="card-body text-center">
+                    <button id="chefBoostBtn"
+                            class="btn btn-warning w-100 mb-2">
+                        Activate Chef Boost
+                    </button>
+                    <div id="chefBoostStatus" class="small text-muted">
+                        No boost active
+                    </div>
+                </div>
+            </div>
+            <div class="card game-card enhancements-section">
+                <div class="card-header">
+                    <h4 class="h6 mb-0">Enhancements</h4>
+                </div>
+                <div class="card-body d-grid gap-2 small enhancements">
+                    <button id="grannyMoreCookies" class="btn btn-outline-dark text-start">
+                        More Cookies
+                        <small>More cookies when lucky<br>Cost: 500 cookies</small>
+                    </button>
+                    <button id="grannyMoreChance" class="btn btn-outline-dark text-start">
+                        Lucky boost
+                        <small>Higher chance<br>Cost: 1000 cookies</small>
+                    </button>
+                    <hr>
+                    <button id="supplierDropBoost" class="btn btn-outline-dark text-start hidden">
+                        Bigger Supplier Drops
+                        <small>Cost: 1000 cookies</small>
+                    </button>
+                    <button id="supplierDropFaster" class="btn btn-outline-dark text-start hidden">
+                        Faster Supplier Drops
+                        <small>Cost: 2000 cookies</small>
+                    </button>
+                    <hr>
+                    <button id="enhBoostTime" class="btn btn-outline-dark text-start hidden">
+                        +15s Duration
+                        <small>Cost: 10000 cookies</small>
+                    </button>
+                    <button id="enhCooldown" class="btn btn-outline-dark text-start hidden">
+                        -60s Cooldown
+                        <small>Cost: 25000 cookies</small>
+                    </button>
+                    <button id="enhPower" class="btn btn-outline-dark text-start hidden">
+                        Stronger Boost
+                        <small>Cost: 50000 cookies</small>
+                    </button>
+                    <button id="enhUltraCooldown" class="btn btn-outline-dark text-start hidden">
+                        UltraCooldown
+                        <small>Cost: 100000 cookies</small>
+                    </button>
+                    <button id="enhUltraTime" class="btn btn-outline-dark text-start hidden">
+                        UltraTime + 60s
+                        <small>Cost: 200000 cookies</small>
+                    </button>
+                    <hr>
+                    <button id="bakeryChefBoost" class="btn btn-outline-dark text-start hidden">
+                        Bakery Synergy
+                        <small>Cost: 50000 cookies</small>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-
-
-</div>
-
 <div class="stats-window hidden" id="statsWindow">
-    <h4>Statistics</h4>
-    <div class="stats-content">
-        <div class="stat-item">
-            <span class="stat-label">Total Cookies:</span>
-            <span class="stat-value" id="totalCookies">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Current CPS:</span>
-            <span class="stat-value" id="currentCPS">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Total Clicks:</span>
-            <span class="stat-value" id="totalClicks">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Grandma:</span>
-            <span class="stat-value" id="grandmaCount">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Supplier:</span>
-            <span class="stat-value" id="supplierCount">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Pastry Chef:</span>
-            <span class="stat-value" id="chefCount">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Bakkery:</span>
-            <span class="stat-value" id="bakkerijCount">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Bank:</span>
-            <span class="stat-value" id="bankCount">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Fabriek:</span>
-            <span class="stat-value" id="FabriekCount">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Temple:</span>
-            <span class="stat-value" id="templeCount">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Coporation:</span>
-            <span class="stat-value" id="corporateCount">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Cookies Spent:</span>
-            <span class="stat-value" id="cookiesSpent">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">All Time:</span>
-            <span class="stat-value" id="allTimeCookies">0</span>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-2 stats-header">
+        <h4 class="h6 mb-0">Statistics</h4>
+        <button class="btn btn-sm btn-outline-secondary"
+                onclick="document.getElementById('statsWindow').classList.add('hidden');const btn = document.getElementById('statsToggleBtn')
+                if (btn) { btn.textContent = 'Show Stats'; btn.setAttribute('aria-expanded','false'); }
+                ">
+        </button>
+    </div>
+    <div class="stats-content small">
+        <div class="stat-item"><span>Total Cookies:</span><span id="totalCookies">0</span></div>
+        <div class="stat-item"><span>Current CPS:</span><span id="currentCPS">0</span></div>
+        <div class="stat-item"><span>Total Clicks:</span><span id="totalClicks">0</span></div>
+        <div class="stat-item"><span>Grandma:</span><span id="grandmaCount">0</span></div>
+        <div class="stat-item"><span>Supplier:</span><span id="supplierCount">0</span></div>
+        <div class="stat-item"><span>Pastry Chef:</span><span id="chefCount">0</span></div>
+        <div class="stat-item"><span>Bakkery:</span><span id="bakkerijCount">0</span></div>
+        <div class="stat-item"><span>Bank:</span><span id="bankCount">0</span></div>
+        <div class="stat-item"><span>Fabriek:</span><span id="FabriekCount">0</span></div>
+        <div class="stat-item"><span>Temple:</span><span id="templeCount">0</span></div>
+        <div class="stat-item"><span>Corporation:</span><span id="corporateCount">0</span></div>
+        <div class="stat-item"><span>Cookies Spent:</span><span id="cookiesSpent">0</span></div>
+        <div class="stat-item"><span>All Time:</span><span id="allTimeCookies">0</span></div>
     </div>
 </div>
-
-
-<div class="options-window hidden" id="optionsWindow">
-    <h4>Options</h4>
-    <div class="options-content">
-        <button id="saveGameBtn">💾 Save Game</button>
-        <button id="loadGameBtn">🔁 Load Game</button>
-        <button id="resetGameBtn">🗑️ Reset Game</button>
+<div class="options-window hidden game-card" id="optionsWindow">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="h6 mb-0">Options</h4>
+        <button class="btn btn-sm btn-outline-secondary"
+                onclick="document.getElementById('optionsWindow').classList.add('hidden');
+                         document.getElementById('optionsToggleBtn').setAttribute('aria-expanded','false');">
+            ✕
+        </button>
+    </div>
+    <div class="options-content d-grid gap-2 small">
+        <button id="saveGameBtn" class="btn btn-outline-dark">💾 Save Game</button>
+        <button id="loadGameBtn" class="btn btn-outline-dark">🔁 Load Game</button>
+        <button id="resetGameBtn" class="btn btn-danger">🗑️ Reset Game</button>
     </div>
 </div>
-
-
 </body>
 </html>
