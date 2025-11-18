@@ -1,11 +1,11 @@
-let count = 100000;
+let count = 1000000;
 let totalClicks = 0;
 let cookiesSpent = 0;
 let allTimeCookies = 0;
 let multiplier = 1;
 let multiplierCost = 50;
 let multiplierLevel = 0;
-const multiplierGrowth = 1.15;
+const multiplierGrowth = 3.25;
 
 let autoClickerCount = 0;
 let autoOutputMultiplier = 1;
@@ -49,7 +49,7 @@ const multiplierBtn = document.getElementById('multiplierBtn');
 const shopBtn = document.getElementById('shopBtn');
 const supplierBtn = document.getElementById('supplierBtn');
 const chefBtn = document.getElementById('chefBtn');
-const bakkerijBtn = document.getElementById('bakkerijbtn'); // let op: zelfde id als in HTML
+const bakkerijBtn = document.getElementById('bakkerijbtn');
 const bankBtn = document.getElementById('bankBtn');
 const templeBtn = document.getElementById('templeBtn');
 const corporateBtn = document.getElementById('corporateBtn');
@@ -106,7 +106,7 @@ class AutoClicker {
         if (this.displayEl) this.displayEl.textContent = this.count;
     }
 }
-const grandma = new AutoClicker("Grandma", 100, 2, 1.4, shopBtn, grandmaCountDisplay);
+const grandma = new AutoClicker("Grandma", 100, 2, 1.1, shopBtn, grandmaCountDisplay);
 const supplier = new AutoClicker("Supplier", 2000, 100, 1.2, supplierBtn, supplierCountDisplay);
 const chef = new AutoClicker("Pastry Chef", 20000, 350, 1.2, chefBtn, chefCountDisplay);
 const bakkerij = new AutoClicker("Bakkerij", 100000, 3500, 1.3, bakkerijBtn, bakkerijCountDisplay);
@@ -261,7 +261,6 @@ if (chefBoostBtn) {
                     cooldownLeft--;
                     if (chefBoostStatus) chefBoostStatus.textContent = `⏳ Cooldown: ${cooldownLeft}s`;
                 }, 1000);
-
                 setTimeout(() => {
                     if (chefBoostTimer) clearInterval(chefBoostTimer);
                     chefBoostCooldown = false;
@@ -284,19 +283,19 @@ function updateBoostButton() {
     }
 }
 
-const enhBoostTimeBtn       = document.getElementById('enhBoostTime');      // chef: langere boost
-const enhCooldownBtn        = document.getElementById('enhCooldown');       // chef: kortere cooldown
-const enhPowerBtn           = document.getElementById('enhPower');          // chef: sterkere boost
-const enhUltraCooldownBtn   = document.getElementById('enhUltraCooldown');  // chef: ultra cooldown
-const enhUltraTimeBtn       = document.getElementById('enhUltraTime');      // chef: ultra tijd
+const enhBoostTimeBtn       = document.getElementById('enhBoostTime');
+const enhCooldownBtn        = document.getElementById('enhCooldown');
+const enhPowerBtn           = document.getElementById('enhPower');
+const enhUltraCooldownBtn   = document.getElementById('enhUltraCooldown');
+const enhUltraTimeBtn       = document.getElementById('enhUltraTime');
 
-const grannyMoreCookiesBtn  = document.getElementById('grannyMoreCookies'); // meer bonus amount
-const grannyMoreChanceBtn   = document.getElementById('grannyMoreChance');  // hogere kans
+const grannyMoreCookiesBtn  = document.getElementById('grannyMoreCookies');
+const grannyMoreChanceBtn   = document.getElementById('grannyMoreChance');
 
-const supplierDropBoostBtn  = document.getElementById('supplierDropBoost'); // grotere drops
-const supplierDropFasterBtn = document.getElementById('supplierDropFaster');// snellere drops
+const supplierDropBoostBtn  = document.getElementById('supplierDropBoost');
+const supplierDropFasterBtn = document.getElementById('supplierDropFaster');
 
-const bakeryChefBoostBtn    = document.getElementById('bakeryChefBoost');   // 🔥 nieuwe bakery upgrade
+const bakeryChefBoostBtn    = document.getElementById('bakeryChefBoost');
 
 let enhBoostTimeCost      = 10000;
 let enhCooldownCost       = 25000;
@@ -410,7 +409,7 @@ enhBoostTimeBtn?.addEventListener('click', () => {
     if (count >= enhBoostTimeCost) {
         count -= enhBoostTimeCost;
         cookiesSpent += enhBoostTimeCost;
-        chefBoostDuration += 15000; // +15s
+        chefBoostDuration += 15000;
         setEnhDone("enh_chefTime");
         updateCount(); updateStats(); renderEnhancements();
     } else { alert("Not enough cookies!"); }
@@ -419,7 +418,7 @@ enhCooldownBtn?.addEventListener('click', () => {
     if (count >= enhCooldownCost) {
         count -= enhCooldownCost;
         cookiesSpent += enhCooldownCost;
-        chefCooldownTime = Math.max(60000, chefCooldownTime - 60000);
+        chefCooldownTime -= 60000;
         setEnhDone("enh_chefCooldown");
         updateCount(); updateStats(); renderEnhancements();
     } else { alert("Not enough cookies!"); }
@@ -428,7 +427,7 @@ enhPowerBtn?.addEventListener('click', () => {
     if (count >= enhPowerCost) {
         count -= enhPowerCost;
         cookiesSpent += enhPowerCost;
-        chefBoostFactor = 0.3; // iets sneller
+        chefBoostFactor = 0.3;
         setEnhDone("enh_chefPower");
         updateCount(); updateStats(); renderEnhancements();
     } else { alert("Not enough cookies!"); }
@@ -437,7 +436,7 @@ enhUltraCooldownBtn?.addEventListener('click', () => {
     if (count >= enhUltraCooldownCost) {
         count -= enhUltraCooldownCost;
         cookiesSpent += enhUltraCooldownCost;
-        chefCooldownTime = Math.max(30000, chefCooldownTime - 60000);
+        chefCooldownTime -= 120000;
         setEnhDone("enh_chefUltraCooldown");
         updateCount(); updateStats(); renderEnhancements();
     } else { alert("Not enough cookies!"); }
@@ -446,7 +445,7 @@ enhUltraTimeBtn?.addEventListener('click', () => {
     if (count >= enhUltraTimeCost) {
         count -= enhUltraTimeCost;
         cookiesSpent += enhUltraTimeCost;
-        chefBoostDuration += 30000; // +30s
+        chefBoostDuration += 30000;
         setEnhDone("enh_chefUltraTime");
         updateCount(); updateStats(); renderEnhancements();
     } else { alert("Not enough cookies!"); }
@@ -464,7 +463,7 @@ grannyMoreChanceBtn?.addEventListener('click', () => {
     if (count >= grannyMoreChanceCost) {
         count -= grannyMoreChanceCost;
         cookiesSpent += grannyMoreChanceCost;
-        grandmaBonusChance = Math.min(0.8, grandmaBonusChance + 0.2);
+        grandmaBonusChance += 0.2;
         setEnhDone("enh_grannyChance");
         updateCount(); updateStats(); renderEnhancements();
     } else { alert("Not enough cookies!"); }
@@ -473,7 +472,7 @@ supplierDropBoostBtn?.addEventListener('click', () => {
     if (count >= supplierDropBoostCost) {
         count -= supplierDropBoostCost;
         cookiesSpent += supplierDropBoostCost;
-        supplierDropAmountBase = Math.floor(supplierDropAmountBase * 1.5);
+        supplierDropAmountBase *= 3;
         setEnhDone("enh_supplierBoost");
         updateCount(); updateStats(); renderEnhancements();
     } else { alert("Not enough cookies!"); }
@@ -482,7 +481,7 @@ supplierDropFasterBtn?.addEventListener('click', () => {
     if (count >= supplierDropFasterCost) {
         count -= supplierDropFasterCost;
         cookiesSpent += supplierDropFasterCost;
-        supplierDropIntervalMs = Math.max(15000, Math.floor(supplierDropIntervalMs * 0.5));
+        supplierDropIntervalMs = 15000;
         if (supplierDropTimer) {
             clearInterval(supplierDropTimer);
             supplierDropTimer = null;
@@ -561,7 +560,7 @@ function loadSaveData(save) {
         grandmaBonusAmount = save.grandmaBonus.amount ?? 10;
     }
     if (save.supplierDrops) {
-        supplierDropIntervalMs = save.supplierDrops.intervalMs ?? 30000;
+        supplierDropIntervalMs = save.supplierDrops.intervalMs ?? 15000;
         supplierDropAmountBase = save.supplierDrops.amountBase ?? 5000;
     }
     if (save.bakerySynergy) {
